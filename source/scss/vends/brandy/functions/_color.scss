@@ -1,0 +1,182 @@
+// Adpated from Brendan Saunders' brightness()
+@function brightness( $color ){
+    
+    $factor: (
+        R: .299,
+        G: .587,
+        B: .114
+    );
+    
+    $R: red( $color ) * map-get( $factor, R ) ;
+    $G: green( $color ) * map-get( $factor, G );
+    $B: blue( $color ) * map-get( $factor, B );
+    
+    @return ($R + $G + $B) / 255 * 100%;
+    
+}
+
+// Adapted from https://gist.github.com/voxpelli/6304812 luma()
+@function luma($color){
+  
+  $RGB: (red($color) / 255), (green($color)/ 255), (blue($color) / 255);
+  
+  @each $X in $RGB {
+    
+    $Y: if($X <= .03928, $X / 12.92, pow((($X + .055) / 1.055), 2.4));
+
+    $RGB: replace($RGB, $X, $Y);
+    
+  }
+  
+  $R: nth($RGB, 1);
+  $G: nth($RGB, 2);
+  $B: nth($RGB, 3);
+  
+  @return .2126 * $R + .7152 * $G + .0722 * $B;
+  
+}
+
+// Adapted from Mike Reithmuller contrast_ratio()
+@function contrast-ratio( $color1, $color2 ){ 
+  
+  $luma1: luma($color1) + 0.05;
+  $luma2: luma($color2) + 0.05;
+
+  @return max($luma1, $luma2) / min($luma1, $luma2);
+  
+}
+
+// Adapted from Mike Reithmuller text-contrast() 
+@function color-contrast( $color, $dark: $brandy-dark-text, $light: $brandy-light-text ){
+  
+  // Use lumanice first.
+  $WCAG: 7, 4.5;
+  
+  // Capture any non-ideal but better color choice.
+  $better-ratio: 0;
+  $better-color: null;
+
+  // Start with the highest threshold.
+  @for $index from 1 through length($WCAG) {
+    
+    $threshold: nth($WCAG, $index);
+    
+    @if( $brandy-bg-contrast == true ){
+
+      $max: 100%;
+      $min: 0%;
+      $increment: 5%;
+      $range: $max - $min;
+      $steps: $range / $increment;
+
+      @for $step from 0 through $steps {
+
+        $percent: $increment * $step + $min;
+
+        $lighter: lighten($color, $percent);
+        $lighter-ratio: contrast-ratio($color, $lighter);
+
+        $darker: darken($color, $percent);
+        $darker-ratio: contrast-ratio($color, $darker);
+
+        @if($lighter-ratio > $darker-ratio){
+          @if( max($better-ratio, $lighter-ratio) == $lighter-ratio ){
+            $better-ratio: $lighter-ratio;
+            $better-color: $lighter;
+          }
+          @if($lighter-ratio > $threshold){ @return $lighter; }
+        }
+        @else if($darker-ratio > $lighter-ratio){
+          @if( max($better-ratio, $darker-ratio) == $darker-ratio ){
+            $better-ratio: $darker-ratio;
+            $better-color: $darker;
+          }
+          @if($darker-ratio > $threshold){ @return $darker; }
+        }
+
+      }
+      
+    }
+    
+    @else {
+      
+      $light-ratio: contrast-ratio($color, $light);
+      $dark-ratio: contrast-ratio($color, $dark);
+
+      @if($light-ratio > $dark-ratio){
+        @if( max($better-ratio, $light-ratio) == $light-ratio ){
+          $better-ratio: $light-ratio;
+          $better-color: $light;
+        }
+        @if($light-ratio > $threshold){ @return $light; }
+      }
+      @else if($dark-ratio > $light-ratio){
+        @if( max($better-ratio, $dark-ratio) == $dark-ratio ){
+          $better-ratio: $dark-ratio;
+          $better-color: $dark;
+        }
+        @if($dark-ratio > $threshold){ @return $dark; }
+      }
+
+    }
+    
+  }
+  
+  @warn $color + ', ' + $dark + ' (dark), and ' + $light + ' (light) do not meet the WebAIM WCAG color contrast standards. WebAIM WCAG AAA expects a threshold of >= 7, and AA expects a threshold >= 4.5. A maximum threshold of ' + $better-ratio + ' was calculated. Please reconsider your color choice(s). For more information, visit http://webaim.org/resources/contrastchecker.';
+  
+  @return $better-color;
+        
+}
+
+// to-HEX() - Retrieves the HEX value of the color given
+@function to-HEX( $color ){
+    
+    $DEC: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15;
+    $HEX: 0 1 2 3 4 5 6 7 8 9 A  B  C  D  E  F;
+    
+    $R: red($color);
+    $G: green($color);
+    $B: blue($color);
+    
+    $R1: nth($HEX, index($DEC, floor( $R / 16 ) ));
+    $R2: nth($HEX, index($DEC, floor( $R % 16 ) ));
+    $G1: nth($HEX, index($DEC, floor( $G / 16 ) ));
+    $G2: nth($HEX, index($DEC, floor( $G % 16 ) ));
+    $B1: nth($HEX, index($DEC, floor( $B / 16) ));
+    $B2: nth($HEX, index($DEC, floor( $B % 16) ));
+
+    $result: $R1 $R2 $G1 $G2 $B1 $B2;
+   
+    @return unquote( '\#' + to-string($result,'') );
+    
+};
+
+// to-RGB() - Retrieves the RGB value of the color given
+@function to-RGB( $color ){
+    
+    $RGB: red($color), green($color), blue($color);
+    
+    @return unquote( 'rgb(' + $RGB + ')' );
+}
+
+// Adapted from Hugo Giraudel's tint() and [Bourbon](bourbon.io) tint()
+@function tint( $color, $percent ){
+    @return mix(white, $color, $percent);
+}
+
+// Adapted from Hugo Giraudel's shade() and [Bourbon](bourbon.io) shade()
+@function shade( $color, $percent ){
+    @return mix(black, $color, $percent);
+}
+
+// color() - Retrieves a color by name, tone, and/or value from a color map.
+@function color($name, $tone: base, $amount: null, $map: $brandy-colors-map) {
+
+  @if($tone == base or $amount == null){
+    @return map-deep-get($map, $name $tone)
+  }
+  @else {
+    @return map-deep-get($map, $name $tone ''+$amount);
+  }
+
+}

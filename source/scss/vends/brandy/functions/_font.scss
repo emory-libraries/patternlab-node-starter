@@ -1,0 +1,33 @@
+// font() - Retrieves a font by name from the font map.
+@function font($name, $map: $brandy-fonts-map) {
+  @return map-deep-get($map, $name);
+}
+
+// font-source() - Adpated from Bourbon's _font-source-declaration() @function
+@function font-source(
+  $family, 
+  $path, 
+  $formats: 'ttf' 'woff' 'woff2' 'eot' 'svg', 
+  $replacement: '-'
+) {
+  
+  $src: ();
+  $family: str-replace($family, ' ', $replacement);
+  
+  $formats-map: (
+    'eot': url('#{$path}.eot?#iefix') format('embedded-opentype'),
+    'woff': url('#{$path}.woff') format('woff'),
+    'woff2': url('#{$path}.woff2') format('woff2'),
+    'svg': url('#{$path}.svg##{$family}') format('svg'),
+    'ttf': url('#{$path}.ttf') format('truetype')
+  );
+  
+  @each $key, $source in $formats-map {
+    @if( contains($formats, $key) ) {
+      $src: append($src, $source, comma);
+    }
+  }
+  
+  @return $src;
+  
+}

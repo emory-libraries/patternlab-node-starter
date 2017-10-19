@@ -1,0 +1,21 @@
+// unit-to-digit() - To parse a unit from a given string representation of a unit.
+@function unit-to-digit( $unit ){
+  @if( $unit == 'px' ){ @return 1px; }
+  @if( $unit == 'em' ){ @return 1em; }
+  @if( $unit == 'pct' ){ @return 1%; }
+  @if( $unit == 'rem' ){ @return 1rem; }
+  @if( $unit == 'cm' ){ @return 1cm; }
+  @if( $unit == 'in' ){ @return 1in; }
+  @if( $unit == 'mm' ){ @return 1mm; }
+  @if( $unit == 'ex' ){ @return 1ex; }
+  @if( $unit == 'vh' ){ @return 1vh; }
+  @if( $unit == 'vw' ){ @return 1vw; }
+  @if( $unit == 'pc' ){ @return 1pc; }
+  @if( $unit == 'pt' ){ @return 1pt; }
+  @if( $unit == 'vmin' ){ @return 1vmin; }
+  @if( $unit == 'vmax' ){ @return 1vmax; }
+  @return 1;
+}
+
+// Import Takeru Suzuki's [mathsass](https://github.com/terkel/mathsass)
+@import '../vendors/mathsass';

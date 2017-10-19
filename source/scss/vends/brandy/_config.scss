@@ -1,0 +1,220 @@
+/**
+ * Configurations for [Brandy](github.com/laurenhamel/brandy).
+ */
+
+/**
+ * $brandy-dark-text
+ * $brandy-light-text
+ *
+ * Sets the dark and light color values for the color-contrast() @function.
+ * The dark color will be returned when contrasting against light backgrounds,
+ * and the light color will be returned when contrasting against dark
+ * backgrounds. Note, the color() @function will attempt to contrast
+ * foreground and background colors according to WebAIM accessibility standards.
+ */
+$brandy-dark-text:      rgb(51, 51, 51) !default;
+$brandy-light-text:     rgb(255, 255, 255) !default;
+
+/**
+ * $brandy-bg-contrast
+ *
+ * Set the color-contrast() @function to use the given background color
+ * to generate dark and light color values. Setting this to TRUE tells
+ * the color-contrast() @function to ignore the above values. Setting
+ * this to FALSE will tell the color-contrast() @function to use the above
+ * variables instead. Note, the light and dark colors generated will be a
+ * shade and tint of the input background color, respectively.
+ */
+$brandy-bg-contrast: false !default;
+
+/**
+ * $brandy-colors-map
+ *
+ * Sets the default map to be used for the color() @function. This value
+ * can be set equal to a map or a variable which references a map. The sample
+ * syntax for an appropriate color map is given below:
+ *
+ * $colors: (
+ *  '<color-name>': (
+ *    base: <color-value>,
+ *    <tone>: <color-variant>,
+ *    <tone-map>: (
+ *      '<tone-amont>': <tone-variant>,
+ *      ...
+ *    ),
+ *    ...
+ *  ),
+ *  ...
+ *);
+ *
+ * In the example above, <color-name> and base: <color-value> are
+ * **required**. Additional tones can be added using the <tone>:
+ * <color-variant> format, or a tone map can be added using the
+ * <tone-map> syntax.
+ */
+$brandy-colors-map: (
+  'black': (
+    base: rgb(0, 0, 0)
+  ),
+  'white': (
+    base: rgb(255, 255, 255)
+  ),
+  'grey': (
+    dark: rgb(51, 51, 51)
+  ),
+  'gray': (
+    dark: rgb(51, 51, 51)
+  )
+) !default;
+
+/**
+ * $brandy-fonts-map
+ *
+ * Sets the default map to be used for the font() @function. This value
+ * can be set equal to a map or a variable which references a map. The sample
+ * syntax for an appropriate font map is given below:
+ *
+ * $fonts: (
+ *  '<font-name-major>': <font-family>,
+ *  '<font-name-major>': (
+ *    '<font-name-minor>': <font-family>,
+ *    ...
+ *  ),
+ *  ...
+ *);
+ *
+ * In the example above, <font-name-major> is the base font name.
+ * Both <font-name-major> and <font-family> are **required**. Additionally,
+ * <font-name-minor> gives an example of how nested maps are handled
+ * within the font map. The font map can be nested as deep as desired.
+ * Deeply nested font maps are referenced by <font-name-major> followed by
+ * all subsequent <font-name-minor> values, where each major and minor value
+ * should be its own string separated by a space.
+ */
+$brandy-fonts-map: (
+  'sans-serif': sans-serif,
+  'serif': serif,
+  'monospace': monospace,
+  'cursive': cursive
+) !default;
+
+/**
+ * $brandy-screens-map
+ *
+ * Sets the default map to be used for the screen() @function. This value
+ * can be set equal to a map or a variable which references a map. The sample
+ * syntax for an appropriate screen map is given below:
+ *
+ * $screens: (
+ *  '<screen-name>': <screen-setting>,
+ *  ...
+ *);
+ *
+ * In the example above, <screen-name> and <screen-setting> are **required**.
+ * If using [Breakpoint](breakpoint-sass.com), <screen-setting> should be
+ * used for the Breakpoint configuration, and <screen-name> should be a memorable
+ * name that can be used with the screen() @function. Usage would then look like:
+ *
+ * @include breakpoint( screen(<screen-name>) ){ ... }
+ */
+$brandy-screens-map: (
+  'mobile': max-width 400,
+  'tablet': max-width 800,
+  'desktop': min-width 801
+) !default;
+
+/**
+ * $brandy-scale-map
+ *
+ * Sets the default map to be used for the scale-font() @function. This value
+ * can be set equal to a map or a variable which references a map. The sample
+ * syntax for an appropriate scale map is given below:
+ *
+ * $scale: (
+ *  '<screen-name>': <screen-scale>,
+ *  ...
+ *);
+ *
+ * In the example above, <screen-name> and <screen-setting> are **required**.
+ * There should be one <screen-name> key with its corresponding <screen-scale>
+ * value to represent each key-value pair in the $brandy-screens-map above.
+ */
+$brandy-scale-map: (
+  'mobile': 1,
+  'tablet': 1,
+  'desktop': 1
+) !default;
+
+/**
+ * $brandy-scale-responsive
+ *
+ * Signals to the scale-font() @function whether or not font scaling should also
+ * be responsive. If set to TRUE, fonts will be scaled according to the values in
+ * the $font-scale-map variable above for each screen breakpoint in the
+ * $brandy-screens-map. If set to FALSE, no scaling will occur.
+ */
+$brandy-scale-responsive: true !default;
+
+/**
+ * $brandy-scale-increasing
+ *
+ * Signals to the scale-font() @function to proportionately increase or
+ * decrease the font size for the given elements. If set to TRUE, font size
+ * will increase from the first element in the list through the last 
+ * element. If set to FALSE, the reverse effect will occur.
+ */
+$brandy-scale-increasing: false !default;
+
+/** 
+ * $brandy-scale-max
+ * $brandy-scale-min
+ *
+ * Sets the maximum and minimum font size for the scale-font() @function.
+ * The maximum font size is applied to the first element in the element list
+ * and the minimum font size is applied to the last element if 
+ * $brandy-scale-increasing above is set to TRUE. If the above variable is
+ * set to FALSE, the reverse effect will occur. If no maximum value is given,
+ * then the minimum value will also be used as the maximum. The minimum value
+ * is always **required**.
+ */
+$brandy-scale-max: 1em !default;
+$brandy-scale-min: 1em !default;
+
+/**
+ * $brandy-config-map
+ *
+ * Sets the default map to be used for the config() @function. This value
+ * can be set equal to a map or a variable which references a map. The sample
+ * syntax for an appropriate config map is given below:
+ *
+ * $config: (
+ *  '<config-name>': <config-setting>,
+ *  ...
+ *);
+ *
+ * In the example above, <config-name> and <config-settings> are **required**.
+ * This config map can be nested as deep as desired. When using deeply nested
+ * config maps, the <config-name> should be followed by any subsequent map key
+ * names until the desired depth is reached, where the <config-name> and all map
+ * keys are their own strings separated by spaces.
+ */
+$brandy-config-map: () !default;
+
+/**
+ * $brandy-grid-columns
+ * $brandy-grid-rows
+ * $brandy-grid-gutter
+ * $brandy-grid-name
+ * $brandy-grid-items
+ * $brandy-grid-units
+ *
+ * Defines the default grid layout used by Brandy for the grid() @mixin. This 
+ * grid layout can be overridden at the global level by resetting these 
+ * variables, or instance-specific variables can be fed into the grid() @function.
+ */
+$brandy-grid-columns: 12 !default;
+$brandy-grid-rows: 100 !default;
+$brandy-grid-gutter: 25 !default;
+$brandy-grid-name: 'grid' !default;
+$brandy-grid-items: 'griditem' !default;
+$brandy-grid-units: 'px' 'em' 'pct' !default;

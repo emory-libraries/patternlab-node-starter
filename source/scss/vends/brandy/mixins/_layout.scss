@@ -1,0 +1,51 @@
+// margin-y() - For setting top and bottom margin
+@mixin margin-y( $margin ){
+  margin-top: $margin;
+  margin-bottom: $margin;
+}
+
+// margin-x() - For setting left and right margin
+@mixin margin-x( $margin ){
+  margin-left: $margin;
+  margin-right: $margin;
+}
+
+// padding-y() - For setting top and bottom padding
+@mixin padding-y( $padding ){
+  padding-top: $padding;
+  padding-bottom: $padding;
+}
+
+// padding-x() - For setting left and right padding
+@mixin padding-x( $padding ){
+  padding-left: $padding;
+  padding-right: $padding;
+}
+
+// absolute-center() - For absolutely centering vertically and horizontally
+@mixin absolute-center() {
+  position: absolute;
+  display: block;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+// absolute-center-x() - For absolutely centering horizontally
+@mixin absolute-center-x() {
+  position: absolute;
+  display: block;
+  left: 50%;
+  transform: translatex(-50%);
+}
+
+// absolute-center-y() - For absolutely centering vertically
+@mixin absolute-center-y() {
+  position: absolute;
+  display: block;
+  top: 50%;
+  transform: translatey(-50%);
+}
+
+// Import John Albin's [normalize-scss](https://github.com/JohnAlbin/normalize-scss)
+@import '../vendors/normalize';

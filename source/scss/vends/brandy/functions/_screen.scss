@@ -1,0 +1,52 @@
+// interpret-screen() - Interprets a screen breakpoint value given a list of settings.
+@function interpret-screen( $setting ){
+  
+  $max-width: false;
+  $min-width: false;
+
+  // Assume a single value is max-width.
+  @if( length($setting) == 1 ) { $max-width: $setting; }
+  
+  // Interpret all other values.
+  @else {
+
+    @for $n from 1 through length($setting) {
+
+      $value: nth($setting, $n);
+
+      @if( $value == max-width or $value == min-width ) {
+        
+        $next: nth($setting, $n + 1);
+        
+        // Interprets max-width or min-width followed by a number.
+        @if( type-of($next) == 'number' ) { 
+          
+          @if( $value == max-width ) { $max-width: $next; }
+          @if( $value == min-width ) { $min-width: $next; }
+          
+          $n: $n + 2;
+          
+        }
+        
+      }
+      @else if( type-of($value) == 'number' ){
+        
+        // Always find max-width first, then min-width.
+        @if( $max-width == false ){ $max-width: $value; }
+        @else if( $min-width == false ){ $min-width: $value }
+        
+      }
+
+    }
+
+  }
+  
+  // Return max-width and min-width.
+  @return $max-width, $min-width;
+  
+}
+
+// screen() - Retrieves a screen breakpoint from a screen map.
+@function screen( $screen, $map: $brandy-screens-map ){
+  @return map-deep-get($map, $screen);
+}

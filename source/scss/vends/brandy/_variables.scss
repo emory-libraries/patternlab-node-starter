@@ -1,0 +1,53 @@
+$all-buttons: selector((
+  'button',
+  'input[type="button"]',
+  'input[type="submit"]',
+  'input[type="reset"]'
+));
+
+$all-buttons-hover: selector( $all-buttons, ':hover' );
+
+$all-buttons-focus: selector( $all-buttons, ':focus' );
+
+$all-buttons-active: selector( $all-buttons, ':active' );
+
+$all-text-inputs: selector((
+  'input[type="text"]',
+  'input[type="color"]',
+  'input[type="data"]',
+  'input[type="datetime"]',
+  'input[type="datetime-local"]',
+  'input[type="email"]',
+  'input[type="month"]',
+  'input[type="number"]',
+  'input[type="password"]',
+  'input[type="search"]',
+  'input[type="tel"]',
+  'input[type="time"]',
+  'input[type="url"]',
+  'input[type="week"]',
+  'input:not([type])',
+  'textarea'
+));
+
+$all-verbage-inputs: join(
+  $all-text-inputs,
+  selector(
+    'select'
+  )
+);
+  
+$all-toggle-inputs: selector((
+  'input[type="radio"]',
+  'input[type="checkbox"]'
+));
+
+$all-inputs: join(
+  $all-verbage-inputs,
+  $all-toggle-inputs
+);
+
+$all-headings: selector((
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+));
+

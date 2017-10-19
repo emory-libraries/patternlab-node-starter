@@ -1,0 +1,30 @@
+/**
+ * expand-properties()
+ *
+ * Expands a given propoerty-value map in place.
+ * Use this within a selector by passing in a
+ * map of properties and their preferred values.
+ */
+@mixin expand-properties( $map ){
+    
+    @each $property, $value in $map {
+      
+      // Special handler for gradients.
+      @if( $property == 'gradient' ){
+        @if( map-get($value, 'type') == 'linear' ){ @include linear-gradient( map-get($value, 'stops') ); }
+        @else if( map-get($value, 'type') == 'radial' ){ @include radial-gradient( map-get($value, 'stops') ); }
+      }
+      
+      // All other properties.
+      @else {
+        
+        #{$property}: $value;
+        
+        // Contrast background colors.
+        @if( $property == 'background-color' ){ color: color-contrast($value); }
+        
+      }
+      
+    }
+    
+  }

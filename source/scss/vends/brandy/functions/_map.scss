@@ -1,0 +1,152 @@
+// Adapted from Hugo Giraudel's map-deep-get() 
+@function map-deep-get( $map, $keys ){
+    
+    @each $key in $keys {
+        $map: map-get( $map, $key );
+    }
+    
+    @return $map;
+}
+
+// Adapted from Hugo Giraudel's map-deep-set()
+@function map-deep-set( $map, $keys, $value ){
+
+    
+    @if( length($keys) == 1) {
+        @return map-merge($map, ($keys: $value));
+    }
+    
+    $map-list: ($map, );
+    
+    @for $i from 1 through length($keys){
+        $map-list: append($map-list, map-get(nth($map-list,-1), nth($keys,$i)));
+    }
+
+    @return map-merge(nth($map-list, length($map-list) - 1), (last($keys): $value));
+    
+}
+
+// Adapted from Hugo Giraudel's map-depth()
+@function map-depth( $map ){
+    
+    $levels: 1;
+    
+    @each $key, $value in $map {
+        @if( type-of($value) == 'map') {
+            $levela: max(map-depth($value) + 1, $levels);
+        }
+    }
+    
+    @return $levels;
+    
+}
+
+// Adapted from Hugo Giraudel's map-has-keys()
+@function map-has-keys( $map, $keys... ){
+    
+    @each $key in $keys {
+        @if( not map-has-key($map, $key) ){
+            @return false;
+        }
+    }
+    
+    @return true;
+    
+}
+
+// Adapted from Hugo Giraudel's map-has-nested-keys()
+@function map-has-nested-keys( $map, $keys... ){
+    
+    @each $key in $keys {
+        @if( not map-has-key($map, $key) ){
+            @return false;
+        }
+        $map: map-get($map, $key);
+    }
+    
+    @return true;
+    
+}
+
+// Adapted from Hugo Giraudel's map-zip()
+@function map-zip( $keys, $values ){
+    
+    $length-keys: length( $keys );
+    $length-values: length( $values );
+    $min: min( $length-keys, $length-values );
+    $map: ();
+    
+    @if( $min == 0 ){ @return $map; }
+    
+    @for $i from 1 through $min {
+        $map: map-merge( $map, (nth($keys, $i): nth($values, $i)) );
+    }
+    
+    @return $map;
+    
+}
+
+// Adapted from Hugo Giraudel's map-extend()
+@function map-extend( $map, $maps.../*, $deep */ ){
+    
+    $last: nth($maps, -1);
+    $deep: $last == true;
+    $max: if( $deep, length($maps) - 1, length($maps) );
+    
+    @for $i from 1 through $max {
+        
+        $current: nth($maps, $i);
+        
+        @if( not $deep ){
+            $map: map-merge( $map, $current );
+        }
+        
+        @else {
+            @each $key, $value in $current {
+                
+                @if( type-of($value) == 'map' and type-of(map-get($map,$key)) == 'map' ){
+                    $value: map-extend(map-get($map, $key), $value, true);
+                }
+                
+                $map: map-merge( $map, ($key: $value) );
+                
+            }
+        }
+        
+    }
+    
+    @return $map;
+    
+}
+
+// Adapted from Miriam Suzanne's map-set()
+@function map-set( $map, $key, $value ){
+    @return map-merge( $map, ($key: $value) );
+}
+
+// Create by Lauren Hamel
+@function map-flatten( $map, $delimiter: '-', $prefix: '' ){
+  
+  $result: ();
+  
+  @each $key, $value in $map {
+    
+    $key: if($prefix != '', $prefix + $delimiter + $key, $key);
+    
+    @if(type-of($value) == 'map'){
+      
+      $result: map-merge($result, map-flatten($value, $delimiter, $key));
+      
+    }
+    
+    @else {
+      
+      $result: map-set($result, $key, $value);
+      
+    }
+    
+  }
+  
+  @return $result;
+  
+}

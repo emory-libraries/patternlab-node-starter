@@ -1,0 +1,18 @@
+// placeholder() - For styling input placeholders.
+@mixin placeholder( $vendors: webkit moz ms ){
+  
+  @if( index($vendors, webkit) > 0 ){
+    &::-webkit-input-placeholder { @content; }
+  }
+  
+  @if( index($vendors, moz) > 0 ){
+    &:-moz-placeholder, &::-moz-placeholder { @content; }
+  }
+  
+  @if( index($vendors, ms) > 0 ){
+    &:-ms-input-placeholder { @content; }
+  }
+  
+  &::placeholder { @content; }
+  
+}

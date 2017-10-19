@@ -1,0 +1,4 @@
+// private() - For creating a private scope for variables
+@mixin private( $description... ) {
+  @content;
+}

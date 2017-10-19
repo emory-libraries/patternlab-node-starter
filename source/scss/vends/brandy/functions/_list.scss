@@ -1,0 +1,224 @@
+// Adapted from Hugo Giraudel's first()
+@function first( $list ){
+    @return nth( $list, 1 );
+}
+
+// Adapted from Hugo Giraudel's last()
+@function last( $list ){
+    @return nth( $list, length( $list ) );
+}
+
+// Adapted from Hugo Giraudel's last-index()
+@function last-index( $list, $value ){
+    
+    @for $i from length($list)*-1 through -1 {
+        @if( nth($list, abs($i)) == $value ){
+            @return abs($i);
+        }
+    }
+    
+    @return null;
+}
+
+// Adapted from Hugo Giraudel's prepend()
+@function prepend( $list, $value ){
+    @return join( $value, $list );
+}
+
+// Adapted from Hugo Giraudel's insert-nth()
+@function insert-nth( $list, $index, $value ){
+    
+    $result: ();
+    
+    @for $i from 1 through length($list) {
+        @if( $i == $index ){
+            $result: append( $result, $value );
+        }
+        
+        $result: append( $result, nth( $list, $i ) );
+    }
+    
+    @return $result;
+    
+}
+
+// Adapted from Hugo Giraudel's replace()
+@function replace( $list, $old, $new, $recursive: false ){
+    
+    $result: ();
+    
+    @for $i from 1 through length($list){
+        @if( type-of( nth($list,$i) ) == list and $recursive ){
+            $result: append($result, replace(nth($list,$i), $old, $new, $recursive));
+        }
+        @else {
+            @if( nth($list, $i) == $old){
+                $result: append($result, $new);
+            }
+            @else {
+                $result: append($result, nth($list,$i));
+            }
+        }
+    }
+    
+    @return $result;
+    
+}
+
+// Adpated from Hugo Giraudel's replace-nth()
+@function replace-nth( $list, $index, $value ){
+    
+    $result: ();
+    $index: if( $index < 0, length($list) + $index + 1, $index );
+    
+    @for $i from 1 through length($list){
+        @if( $i == $index ){
+            $result: append( $result, $value );
+        }
+        @else {
+            $result: append( $result, nth($list, $i) );
+        }
+    }
+    
+    @return $result;
+    
+}
+
+// Adpated from Hugo Giraudel's remove()
+@function remove( $list, $value, $recursive: false ){
+    
+    $result: ();
+    
+    @for $i from 1 through length($list){
+        @if( type-of( nth($list,$i) ) == list and $recursive ){
+            $result: append( $result, remove( nth($list,$i), $value, $recursive ) );
+        }
+        @else if( nth($list, $i) != $value ){
+            $result: append( $result, nth($list,$i) );
+        }
+    }
+    
+    @return $result;
+    
+}
+
+// Adpated from Hugo Giraudel's remove-nth()
+@function remove-nth( $list, $index ){
+    
+    $result: ();
+    $index: if( $index < 0, length( $list ) + $index + 1, $index );
+    
+    @for $i from 1 through length($list){
+        @if( $i != $index ){
+            $result: append( $result, nth($list,$i) );
+        }
+    }
+    
+    @return $result;
+    
+}
+
+// Adapted from Hugo Giraudel's slice()
+@function slice( $list, $start: 1, $end: length($list) ){
+    
+    $result: ();
+    
+    @for $i from $start through $end {
+        $result: append( $result, nth($list,$i) );
+    }
+    
+    @return $result;
+    
+}
+
+// Adapted from Hugo Giraudel's reverse()
+@function reverse( $list, $recursive: false ){
+    
+    $result: ();
+    
+    @for $i from length($list)*-1 through -1 {
+        @if( type-of( nth($list, abs($i)) ) == list and $recursive ){
+            $result: append( $result, reverse(nth($list,abs($i)), $recursive) );
+        }
+        @else {
+            $result: append( $result, nth($list, abs($i)) );
+        }
+    }
+    
+    @return $result;
+    
+}
+
+// Adapted from Hugo Giraudel's to-string()
+@function to-string( $list, $glue: '', $is-nested: false ){
+    
+    $result: null;
+    
+    @for $i from 1 through length($list){
+        
+        $e: nth($list, $i);
+        
+        @if( type-of($e) == list ){
+            $result: $result + to-string($e, $glue, true) ;
+        }
+        @else {
+            $result: if( $i != length($list) or $is-nested, 
+                            $result + $e + $glue, 
+                            $result + $e 
+                       );
+        }
+        
+    }
+    
+    @return $result;
+    
+}
+
+// Adapted from Justin Navarro's explode()
+@function to-list( $string, $delimiter: ',' ){
+    
+    $list: ();
+    $sum: str-length( $string );
+    
+    @for $i from 1 through $sum {
+        
+        $str: str-index( $string, $delimiter );
+        
+        @if type-of($str) == number {
+            $each: str-slice( $string, 0, ($str - 1) );
+            $list: append( $list, $each );
+            $string: str-slice( $string, ($str + 1), $sum);
+        }
+        
+    }
+    
+    @return $list;
+}
+
+// Adapted from Ana Tudor's loop()
+@function shift-index( $list, $value: 1 ){
+    
+    $result: ();
+    
+    @for $i from 0 to length($list){
+        $result: append( $result, nth($list, ($i - $value) % length($list)+ 1) );
+    }
+    
+    @return $result;
+    
+}
+
+// contains() - Looks for a value in a list
+@function contains( $list, $search ) {
+  
+  $result: false;
+  
+  @each $item in $list {
+    @if( $item == $search ) {
+      $result: true;
+    }
+  }
+  
+  @return $result;
+  
+}

@@ -1,0 +1,102 @@
+{
+  "paths": {
+    "root": "./",
+    "styleguideDefault": "./node_modules/styleguidekit-assets-default/dist/",
+    "source": {
+      "root": "./source/",
+      "patterns": "./source/_patterns/",
+      "data": "./source/_data/",
+      "meta": "./source/_meta/",
+      "annotations": "./source/_annotations/",
+      "styleguide": "./source/styleguide/",
+      "patternlabFiles": "./node_modules/styleguidekit-mustache-default/views/",
+      "js": "./source/js",
+      "images": "./source/images",
+      "fonts": "./source/fonts",
+      "css": "./source/css/",
+      "scss": "./source/scss/"
+    },
+    "public": {
+      "root": "./public/",
+      "patterns": "./public/patterns/",
+      "data": "./public/styleguide/data/",
+      "annotations": "./public/annotations/",
+      "styleguide": "./public/styleguide/",
+      "js": "./public/js/",
+      "images": "./public/images/",
+      "fonts": "./public/fonts/",
+      "css": "./public/css/",
+      "scss": "./public/scss/"
+    },
+    "dist": {
+      "js": "./dist/<%= pkg.version %>/js/",
+      "images": "./dist/<%= pkg.version %>/images/",
+      "fonts": "./dist/<%= pkg.version %>/fonts/",
+      "css": "./dist/<%= pkg.version %>/css/"
+    }
+  },
+  "styleGuideExcludes": [
+    "templates",
+    "pages"
+  ],
+  "defaultPattern": "all",
+  "cleanPublic": true,
+  "patternExtension": "mustache",
+  "ignored-extensions": [
+    "scss",
+    "DS_Store",
+    "less"
+  ],
+  "ignored-directories": [
+    "scss"
+  ],
+  "debug": false,
+  "ishControlsHide": {
+    "s": false,
+    "m": false,
+    "l": false,
+    "full": false,
+    "random": false,
+    "disco": false,
+    "hay": true,
+    "mqs": false,
+    "find": false,
+    "views-all": false,
+    "views-annotations": false,
+    "views-code": false,
+    "views-new": false,
+    "tools-all": false,
+    "tools-docs": false
+  },
+  "ishMinimum": "240",
+  "ishMaximum": "2600",
+  "patternStateCascade": [
+    "specification",
+    "construction",
+    "review",
+    "complete",
+    "reconsideration",
+    "deprecated"
+  ],
+  "patternExportPatternPartials": [],
+  "patternExportDirectory": "./pattern_exports/",
+  "baseurl": "",
+  "cacheBust": true,
+  "starterkitSubDir": "dist",
+  "outputFileSuffixes": {
+    "rendered": "",
+    "rawTemplate": "",
+    "markupOnly": ".markup-only"
+  },
+  "plugins": {
+    "plugin-node-tab": {
+      "enabled": true,
+      "initialized": false,
+      "options": {
+        "tabsToAdd": [
+          "js"
+        ]
+      }
+    }
+  }
+}

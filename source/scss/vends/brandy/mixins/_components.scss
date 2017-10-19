@@ -1,0 +1,284 @@
+// grid() - To create a grid from given configurations.
+@mixin grid($columns: $brandy-grid-columns,
+            $rows: $brandy-grid-rows,
+            $gutter: $brandy-grid-gutter,
+            $name: $brandy-grid-name,
+            $items: $brandy-grid-items,
+            $units: $brandy-grid-units,
+            $breaks: $brandy-screens-map
+){
+    
+  $default-unit: first($units);
+  
+  .#{$name} {
+    display: grid;
+    grid-template-columns: repeat($columns, 1fr);
+    grid-gap: 0;
+  
+    // Setup columns.
+    @for $column from 1 through $columns {
+  
+      &.cols-#{$column} { grid-template-columns: repeat($column, 1fr); }
+  
+      // Setup column spans.
+      @for $col from 1 through $column {
+  
+        .#{$items}.col-span-#{$col} { grid-column-end: span $col; }
+        .#{$items}.col-start-#{$col} { grid-column-start: $col; }
+        .#{$items}.col-end-#{$col} { grid-column-end: $col + 1; }
+  
+      } // end @for $col
+  
+    } // end @for $columns
+  
+    // Setup gutters.
+    @for $gap from 0 through $gutter {
+  
+      &.gutter-#{$gap} { grid-gap: ($gap * unit-to-digit($default-unit)); }
+      &.gutter-col-#{$gap} { grid-column-gap: ($gap * unit-to-digit($default-unit)); }
+      &.gutter-row-#{$gap} { grid-row-gap: ($gap * unit-to-digit($default-unit)); }
+  
+      @each $unit in $units {
+  
+        &.gutter-unit-#{$unit}.gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($unit)); }
+        &.gutter-unit-#{$unit}.gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($unit)); }
+        &.gutter-unit-#{$unit}.gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($unit)); }
+  
+      }
+  
+    } // end @for $gutter
+  
+    // Setup row spans.
+    @for $row from 1 through $rows {
+  
+      .#{$items}.row-span-#{$row} { grid-row-end: span $row; }
+      .#{$items}.row-start-#{$row} { grid-row-start: $row; }
+      .#{$items}.row-end-#{$row} { grid-row-end: $row; }
+  
+    } // end @for $rows
+  
+    // Make grids responsive.
+    @each $screen, $setting in $breaks {
+  
+      // Use breakpoint if available.
+      @if( mixin-exists(breakpoint) ){
+       
+        @include breakpoint( $setting ){
+  
+          // Setup columns.
+          @for $column from 1 through $columns {
+  
+            &.#{$screen}-cols-#{$column} { grid-template-columns: repeat($column, 1fr); }
+
+            // Setup column spans.
+            @for $col from 1 through $column {
+  
+              .#{$items}.#{$screen}-col-span-#{$col} { grid-column-end: span $col; }
+              .#{$items}.#{$screen}-col-start-#{$col} { grid-column-start: $col; }
+              .#{$items}.#{$screen}-col-end-#{$col} { grid-column-end: $col + 1; }
+  
+            } // end @for $col
+  
+          } // end @for $columns
+  
+          // Setup gutters.
+          @for $gap from 0 through $gutter {
+  
+            &.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($default-unit)); }
+            &.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($default-unit)); }
+            &.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($default-unit)); }
+  
+            @each $unit in $units {
+  
+              &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($unit)); }
+              &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($unit)); }
+              &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($unit)); }
+  
+            }
+  
+          } // end @for $gutter
+  
+          // Setup row spans.
+          @for $row from 1 through $rows {
+  
+            .#{$items}.#{$screen}-row-span-#{$row} { grid-row-end: span $row; }
+            .#{$items}.#{$screen}-row-start-#{$row} { grid-row-start: $row; }
+            .#{$items}.#{$screen}-row-end-#{$row} { grid-row-end: $row; }
+  
+          } // end @for $rows
+  
+          // Allow items to be hidden.
+          .#{$items}.#{$screen}-hidden { display: none; }
+  
+        } // end @include breakpoint
+      
+      } // end @if mixin-exists(breakpoint)
+  
+      // Default to media queries.
+      @else {
+        
+        // Interpret the screen breakpoint.
+        $setting: interpret-screen($setting);
+        
+        // Breakout max-width and min-width.
+        $max-width: nth($setting, 1);
+        $min-width: nth($setting, 2);
+        
+        @if( $max-width != false and $min-width != false ) {
+          @media (max-width: $max-width) and (min-width: $min-width) {
+            
+            // Setup columns.
+            @for $column from 1 through $columns {
+
+              &.#{$screen}-cols-#{$column} { grid-template-columns: repeat($column, 1fr); }
+
+              // Setup column spans.
+              @for $col from 1 through $column {
+
+                .#{$items}.#{$screen}-col-span-#{$col} { grid-column-end: span $col; }
+                .#{$items}.#{$screen}-col-start-#{$col} { grid-column-start: $col; }
+                .#{$items}.#{$screen}-col-end-#{$col} { grid-column-end: $col + 1; }
+
+              } // end @for $col
+
+            } // end @for $columns
+
+            // Setup gutters.
+            @for $gap from 0 through $gutter {
+
+              &.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($default-unit)); }
+              &.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($default-unit)); }
+              &.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($default-unit)); }
+
+              @each $unit in $units {
+
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($unit)); }
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($unit)); }
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($unit)); }
+
+              }
+
+            } // end @for $gutter
+
+            // Setup row spans.
+            @for $row from 1 through $rows {
+
+              .#{$items}.#{$screen}-row-span-#{$row} { grid-row-end: span $row; }
+              .#{$items}.#{$screen}-row-start-#{$row} { grid-row-start: $row; }
+              .#{$items}.#{$screen}-row-end-#{$row} { grid-row-end: $row; }
+
+            } // end @for $rows
+
+            // Allow items to be hidden.
+            .#{$items}.#{$screen}-hidden { display: none; }
+            
+          } // end @media max-width and min-width
+        } // end @if max-width and min-width
+        @else if( $max-width != false ) {
+          @media (max-width: $max-width) {
+            
+            // Setup columns.
+            @for $column from 1 through $columns {
+
+              &.#{$screen}-cols-#{$column} { grid-template-columns: repeat($column, 1fr); }
+
+              // Setup column spans.
+              @for $col from 1 through $column {
+
+                .#{$items}.#{$screen}-col-span-#{$col} { grid-column-end: span $col; }
+                .#{$items}.#{$screen}-col-start-#{$col} { grid-column-start: $col; }
+                .#{$items}.#{$screen}-col-end-#{$col} { grid-column-end: $col + 1; }
+
+              } // end @for $col
+
+            } // end @for $columns
+
+            // Setup gutters.
+            @for $gap from 0 through $gutter {
+
+              &.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($default-unit)); }
+              &.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($default-unit)); }
+              &.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($default-unit)); }
+
+              @each $unit in $units {
+
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($unit)); }
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($unit)); }
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($unit)); }
+
+              }
+
+            } // end @for $gutter
+
+            // Setup row spans.
+            @for $row from 1 through $rows {
+
+              .#{$items}.#{$screen}-row-span-#{$row} { grid-row-end: span $row; }
+              .#{$items}.#{$screen}-row-start-#{$row} { grid-row-start: $row; }
+              .#{$items}.#{$screen}-row-end-#{$row} { grid-row-end: $row; }
+
+            } // end @for $rows
+
+            // Allow items to be hidden.
+            .#{$items}.#{$screen}-hidden { display: none; }
+            
+          } // end @media max-width
+        } // end @if max-width
+        @else if( $min-width != false ) {
+          @media (min-width: $min-width) {
+            
+            // Setup columns.
+            @for $column from 1 through $columns {
+
+              &.#{$screen}-cols-#{$column} { grid-template-columns: repeat($column, 1fr); }
+
+              // Setup column spans.
+              @for $col from 1 through $column {
+
+                .#{$items}.#{$screen}-col-span-#{$col} { grid-column-end: span $col; }
+                .#{$items}.#{$screen}-col-start-#{$col} { grid-column-start: $col; }
+                .#{$items}.#{$screen}-col-end-#{$col} { grid-column-end: $col + 1; }
+
+              } // end @for $col
+
+            } // end @for $columns
+
+            // Setup gutters.
+            @for $gap from 0 through $gutter {
+
+              &.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($default-unit)); }
+              &.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($default-unit)); }
+              &.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($default-unit)); }
+
+              @each $unit in $units {
+
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-#{$gutter} { grid-gap: ($gutter * unit-to-digit($unit)); }
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-col-#{$gutter} { grid-column-gap: ($gutter * unit-to-digit($unit)); }
+                &.#{$screen}-gutter-unit-#{$unit}.#{$screen}-gutter-row-#{$gutter} { grid-row-gap: ($gutter * unit-to-digit($unit)); }
+
+              }
+
+            } // end @for $gutter
+
+            // Setup row spans.
+            @for $row from 1 through $rows {
+
+              .#{$items}.#{$screen}-row-span-#{$row} { grid-row-end: span $row; }
+              .#{$items}.#{$screen}-row-start-#{$row} { grid-row-start: $row; }
+              .#{$items}.#{$screen}-row-end-#{$row} { grid-row-end: $row; }
+
+            } // end @for $rows
+
+            // Allow items to be hidden.
+            .#{$items}.#{$screen}-hidden { display: none; }
+            
+          } // end @media min-width
+        } // end @if min-width
+  
+      }
+  
+    } // end @each $screen, $setting
+  
+  } // end .grid
+
+}

@@ -1,0 +1,35 @@
+// border-right-radius() - For adding a border radius to the right side of a box
+@mixin border-right-radius( $radius ){
+  border-top-right-radius: $radius;
+  border-bottom-right-radius: $radius;
+}
+
+// border-top-radius() - For adding a border radius to the top side of a box
+@mixin border-top-radius( $radius ){
+  border-top-right-radius: $radius;
+  border-top-left-radius: $radius;
+}
+
+// border-left-radius() - For adding a border radius to the left side of a box
+@mixin border-left-radius( $radius ){
+  border-top-left-radius: $radius;
+  border-bottom-left-radius: $radius;
+}
+
+// border-right-radius() - For adding a border radius to the bottom side of a box
+@mixin border-bottom-radius( $radius ){
+  border-bottom-left-radius: $radius;
+  border-bottom-right-radius: $radius;
+}
+
+// size() - For setting the width and height of a box to the same size
+@mixin size( $size ){
+  width: $size;
+  height: $size;
+}
+
+// aspect-ratio() - For setting the size of a box based on an aspect ratio
+@mixin aspect-ratio( $ratio, $width: 100% ){
+  width: $width;
+  padding-bottom: $width / $ratio;
+}

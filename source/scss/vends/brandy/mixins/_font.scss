@@ -1,0 +1,141 @@
+// google-font() - Load a font from the Google Fonts library (fonts.google.com).
+@mixin google-font( $fonts ){
+    
+    $cdn: 'https://fonts.googleapis.com/css?family=';
+    
+    // Loop through fonts.
+    @each $font in $fonts {
+        
+        $name: quote( str-replace($font, ' ', '+') );
+        
+        @import url( #{ $cdn + $name } );
+        
+    }
+    
+}
+
+// scale-font() - Proportionately scale font size across the given elements.
+@mixin scale-font($elements, 
+                  $min: $brandy-scale-min, 
+                  $max: $brandy-scale-max, 
+                  $save: null, 
+                  $increasing: $brandy-scale-increasing,
+                  $responsive: $brandy-scale-responsive,
+                  $scale: $brandy-scale-map,
+                  $breaks: $brandy-screens-map
+){
+
+  $max: if(type-of($max) != 'number', $min, $max);
+  $length: length($elements);
+  $steps: $length - 2;
+  $map: ();
+  
+  // Scale elements.
+  @each $element in $elements {
+
+    $index: index($elements, $element);
+    $factor: ($min / $max) / $steps * $index;
+    $size: null;
+    $ratio: null;
+
+    @if( $increasing == true ) {
+      
+      @if( $index == $length ){ 
+        $ratio: $max / $min;
+        $size: $max; 
+      }
+      @else if( $index == 1 ){ 
+        $ratio: 1;
+        $size: $min 
+      }
+      @else { 
+        $ratio: ($min + $factor) / $min;
+        $size: $min * $ratio; 
+      }
+      
+    } // end @if $increasing == true
+    @else {  
+      
+      @if( $index == $length ) { 
+        $ratio: $min / $max;
+        $size: $min; 
+      }
+      @else if( $index == 1 ) { 
+        $ratio: 1;
+        $size: $max; 
+      }
+      @else { 
+        $ratio: ($max - $factor) / $max;
+        $size: $max * $ratio;
+      }
+
+    } // end @else $increasing == false
+
+    #{$element} { font-size: $size; }
+    
+    $map: map-set($map, $element, $ratio);
+    
+    @if( type-of($save) == 'map') { $save: map-set($save, $element, $ratio); } // end @if type-of($save) == 'map'
+
+  } // end @each $element in $elements
+  
+  // Make responsive.
+  @if( $responsive == true ) {
+   
+    @each $element, $ratio in $map {
+      @each $screen, $setting in $breaks {
+        @if( map-has-key($scale, $screen) ) {
+          
+          $resizer: map-get($scale, $screen);
+          
+          // Use breakpoint in available.
+          @if( mixin-exists(breakpoint) ) {
+     
+            #{$element} { @include breakpoint($setting){ font-size: $max * $ratio * $resizer; } }
+            
+          } // end @if mixin-exists($breakpoint)
+          
+          // Default to media queries.
+          @else {
+
+            // Interpret the screen breakpoint.
+            $setting: interpret-screen($setting);
+
+            // Breakout into separate variables.
+            $max-width: nth($setting, 1);
+            $min-width: nth($setting, 2);
+            
+            @if( $max-width != false and $min-width != false ) {
+              @media (max-width: $max-width) and (min-width: $min-width) {
+                #{$element} { font-size: $max * $ratio * $resizer; }
+              }
+            } // end @if $max-width and $min-width
+            @else if( $max-width != false ) {
+              @media (max-width: $max-width) {
+                #{$element} { font-size: $max * $ratio * $resizer; }
+              }
+            } // end @if $max-width
+            @else if( $min-width != false ) {
+              @media (min-width: $min-width) {
+                #{$element} { font-size: $max * $ratio * $resizer; }
+              }
+            } // end @if $min-width
+
+          } // end @else not mixin-exists($breakpoint)
+          
+        } // end @if map-has-key($cale, $screen)
+      } // end @each $screen, $setting in $breaks
+    } // end @each $element, $ratio in $map
+    
+  } // end @if responsive == true
+  
+}
+
+// font-face() - Adapted from Bourbon's font-face() @mixin
+@mixin font-face($family, $path, $formats: "ttf" "woff2" "woff" "eot" "svg") {
+  @font-face {
+    font-family: $family;
+    src: font-source($family, $path, $formats);
+  }
+  @content;
+}
