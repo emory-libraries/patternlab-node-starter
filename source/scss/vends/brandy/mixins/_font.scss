@@ -1,16 +1,31 @@
 // google-font() - Load a font from the Google Fonts library (fonts.google.com).
-@mixin google-font( $fonts ){
+@mixin google-font( $fonts, $weights... ){
     
-    $cdn: 'https://fonts.googleapis.com/css?family=';
+  $cdn: 'https://fonts.googleapis.com/css?family=';
     
-    // Loop through fonts.
-    @each $font in $fonts {
+  // Loop through fonts.
+  @each $font in $fonts {
+
+    $name: quote( str-replace($font, ' ', '+') );
+    $weight: '';
+
+    @if( length($weights) > 0 ) {
+      
+      $weight: $weight + ':';
+      
+      @each $wgt in $weights {
+
+        $weight: $weight + $wgt;
         
-        $name: quote( str-replace($font, ' ', '+') );
-        
-        @import url( #{ $cdn + $name } );
-        
+        @if( index($weights, $wgt) != length($weights) ) { $weight: $weight + ','; }
+
+      }
+      
     }
+
+    @import url( #{ $cdn + $name + $weight } );
+
+  }
     
 }
 
