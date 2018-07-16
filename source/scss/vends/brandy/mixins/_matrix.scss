@@ -1,0 +1,21 @@
+////
+/// @group brandy-matrix
+////
+
+/// Outputs the contents of a matrix to the debugging window
+///
+/// @requires {function} is-matrix
+/// @requires {function} matrix-print
+/// @param {matrix} $matrix - Some matrix
+/// @throws 'Cannot execute `matrix-print` on non-matrix `#{$matrix}`.'
+@mixin matrix-print( $matrix ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-print` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @debug matrix-print( $matrix );
+  
+}

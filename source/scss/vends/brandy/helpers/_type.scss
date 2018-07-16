@@ -1,0 +1,109 @@
+////
+/// @group brandy-type
+////
+
+/// Determines whether some value is of type `null`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-null( $value ) { @return $value == null; }
+
+/// Determines whether some value is of type `bool`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-boolean( $value ) { @return type-of($value) == 'bool'; }
+
+/// Determines whether some value is of type `bool`
+///
+/// @alias is-boolean
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-bool( $value ) { @return type-of($value) == 'bool'; }
+
+/// Determines whether some value is of type `map`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-map( $value ) { @return type-of($value) == 'map'; }
+
+/// Determines whether some value is of type `number`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-number( $value ) { @return type-of($value) == 'number'; }
+
+/// Determines whether some value is of type `color`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-color( $value ) { @return type-of($value) == 'color'; }
+
+/// Determines whether some value is of type `list`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-list( $value ) { @return type-of($value) == 'list'; }
+
+/// Determines whether some value is of type `arglist`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-arglist( $value ) { @return type-of($value) == 'arglist'; }
+
+/// Determines whether some value is of type `string`
+///
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-string( $value ) { @return type-of($value) == 'string'; }
+
+/// Determines whether some value resembles a `matrix`
+///
+/// @requires {function} is-list
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-matrix( $value ) {
+  
+  @if( not is-list($value) ) { @return false; }
+  
+  @each $item in $value {
+    
+    @if( not is-list($item) ) { @return false; }
+    
+  }
+  
+  @return true;
+  
+}
+
+/// Determines whether some value resembles a `sprite`
+///
+/// @requires {function} is-map
+/// @requires {function} map-has-keys
+/// @requires {function} is-string
+/// @requires {function} is-number
+/// @requires {function} is-matrix
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-sprite( $value ) {
+  
+  @if( not is-map($value) ) { @return false; }
+  @if( not map-has-keys($value, url, width, height, spacing, matrix) ) { @return false; }
+  @if( not is-string(map-get($value, url)) ) { @return false; }
+  @if( not is-number(map-get($value, width)) ) { @return false; }
+  @if( not is-number(map-get($value, height)) ) { @return false; }
+  @if( not is-number(map-get($value, spacing)) ) { @return false; }
+  @if( not is-matrix(map-get($value, matrix)) ) { @return false; }
+  
+  @return true;
+    
+}
+
+/// Determines whether some value is a position
+///
+/// @requires {function} is-length
+/// @requires {function} is-percentage
+/// @requires {function} contains
+/// @param {mixed} $value - Some value
+/// @returns {boolean}
+@function is-position( $value ) { @return is-length($value) or is-percentage($value) or contains('top' 'left' 'right' 'bottom', $value); }

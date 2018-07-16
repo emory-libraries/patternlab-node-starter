@@ -1,0 +1,1411 @@
+////
+/// @group brandy-matrix
+////
+
+/// Create an empty matrix using `0` as a placeholder value
+///
+/// @requires {function} is-number
+/// @param {number} $rows - The desired number of rows
+/// @param {number} $columns - The desired number of columns
+/// @returns {list}
+/// @throws 'Function `matrix` expects a number for argument `$rows` but #{type-of($rows)} was given.'
+/// @throws 'Function `matrix` expects a number for argument `$columns` but #{type-of($columns)} was given.'
+@function matrix( $rows, $columns: $rows ) {
+  
+  @if( not is-number($rows) ) {
+    
+    @error 'Function `matrix` expects a number for argument `$rows` but #{type-of($rows)} was given.';
+    
+  }
+  
+  @if( not is-number($columns) ) {
+    
+    @error 'Function `matrix` expects a number for argument `$columns` but #{type-of($columns)} was given.';
+    
+  }
+  
+  $matrix: ();
+  
+  @for $r from 1 through $rows {
+    
+    $row: ();
+    
+    @for $c from 1 through $columns {
+      
+      $row: append($row, 0);
+      
+    }
+    
+    $matrix: append($matrix, $row);
+    
+  }
+  
+  @return $matrix;
+  
+}
+
+/// Creates a matrix from a given list of values, optionally made square for uneven lists using `0` as a placeholder value
+///
+/// @requires {function} is-number
+/// @requires {function} is-list
+/// @requires {function} contains
+/// @param {number} $rows - The desired number of rows
+/// @param {list} $values - The list of values to be used
+/// @param {boolean} $square [true] - Whether the matrix should be filled with placeholder value `0` when `$values` are uneven
+/// @throws 'Function `matrix-from` expects a number for argument `$rows` but `#{type-of($rows)}` was given.'
+/// @throws 'Function `matrix-from` expects a list for argument `$values` but `#{type-of($values)}` was given.'
+/// @throws 'Function `matrix-from` expects `true` or `false` for argument `$square` but `#{$square}` was given.'
+@function matrix-from( $rows, $values, $square: true ) {
+  
+  @if( not is-number($rows) ) {
+    
+    @error 'Function `matrix-from` expects a number for argument `$rows` but `#{type-of($rows)}` was given.';
+    
+  }
+  
+  @if( not is-list($values) ) {
+    
+    @error 'Function `matrix-from` expects a list for argument `$values` but `#{type-of($values)}` was given.';
+    
+  }
+  
+  @if( not contains(true false, $square) ) {
+
+    @error 'Function `matrix-from` expects `true` or `false` for argument `$square` but `#{$square}` was given.';
+    
+  }
+  
+  $columns: ceil(length($values) / $rows);
+  
+  $n: 1;
+  
+  $matrix: ();
+  
+  @for $r from 1 through $rows {
+    
+    $row: ();
+    
+    @for $c from 1 through $columns {
+        
+      @if( nth($values, $n) ) {
+
+        $row: append($row, nth($values, $n));
+
+      }
+
+      @else if( $square ) {
+
+        $row: append($row, 0);
+
+      }
+      
+      $n: $n + 1;
+      
+    }
+    
+    $matrix: append($matrix, $row);
+    
+  }
+  
+  @return $matrix;
+  
+}
+
+/// Counts the number rows in a matrix
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @returns {number}
+/// @throws 'Cannot count `matrix-rows` on non-matrix `#{$matrix}`.'
+@function matrix-rows( $matrix ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot count `matrix-rows` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @return length($matrix);
+  
+}
+
+/// Counts the number of columns in a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} contains
+/// @param {matrix} $matrix - Some matrix
+/// @param {boolean} $max [true] - Whether to return the maximum or minimum number of columns within the matrix
+/// @returns {number}
+/// @throws 'Cannot count `matrix-columns` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-columns` expects `true` or `false` for argument `$max` but `#{$max}` was given.'
+@function matrix-columns( $matrix, $max: true ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot count `matrix-columns` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not contains(true false, $max) ) {
+    
+    @error 'Function `matrix-columns` expects `true` or `false` for argument `$max` but `#{$max}` was given.';
+    
+  }
+  
+  $columns: length(first($matrix));
+  
+  @each $row in $matrix { $columns: if( $max, max($columns, length($row)), min($columns, length($row)) ); }
+  
+  @return $columns;
+  
+}
+
+/// Counts the number of rows and columns in a matrix
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @returns {map} - In the form of `(rows: 0, columns: 0)`
+/// @throws 'Cannot execute `matrix-size` on non-matrix `#{$matrix}`.'
+@function matrix-size( $matrix ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-size` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $size: ( rows: 0, columns: 0 );
+  
+  @each $row in $matrix { $size: map-set($size, rows, map-get($size, rows) + 1); }
+  
+  @each $column in nth($matrix , 1){ $size: map-set($size, columns, map-get($size, columns) + 1); }
+  
+  @return $size;
+  
+}
+
+/// Determines if a matrix has the given coordinates
+///
+/// @requires {function} is-matrix
+/// @requires {function} first
+/// @requires {function} last
+/// @requires {function} matrix-rows
+/// @requires {function} matrix-columns
+/// @param {matrix} $matrix - Some matrix
+/// @param {list} $coordinates - A set of matrix coordinates where the `row` value preceeds the `column` value
+/// @returns {boolean}
+/// @throws 'Cannot execute `matrix-has-coords` on non-matrix `#{$matrix}`.'
+@function matrix-has-coords( $matrix, $coordinates ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-has-coords` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $row: first($coordinates);
+  $column: last($coordinates);
+  
+  @if( $row > matrix-rows($matrix) ) { @return false; }
+  @if( $column > matrix-columns($matrix) ) { @return false; }
+  
+  @return true;
+  
+}
+
+/// Sets a value within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} first
+/// @requires {function} last
+/// @param {matrix} $matrix - Some matrix
+/// @param {list} $coordinates - A set of matrix coordinates where the `row` value preceeds the `column` value
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-set` on non-matrix `#{$matrix}`.'
+@function matrix-set( $matrix, $coordinates, $value ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-set` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $row: first($coordinates);
+  $column: last($coordinates);
+  $matrix: set-nth($matrix, $row, set-nth(nth($matrix, $row), $column, $value));
+  
+  @return $matrix;
+  
+}
+
+/// Sets all values on a diagonal within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-list
+/// @requires {function} matrix-set
+/// @param {matrix} $matrix - Some matrix
+/// @param {string | list} $value - One or more values to set in the given matrix
+/// @param {string} $direction - Designates the starting edge relative to the top
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-set-diagonal` on non-matrix `#{$matrix}`.'
+@function matrix-set-diagonal( $matrix, $value, $direction: left ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-set-diagonal` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  // Set values starting at top-left edge.
+  @if( $direction == left ) {
+    
+    $i: 1;
+    
+    @if( is-list($value) ) {
+      
+      $n: 1;
+    
+      @for $r from 1 through length($matrix) { 
+
+        $row: nth($matrix, $r);
+        
+        $val: nth($value, $n);
+
+        @for $c from 1 through length($row) {
+
+          @if( $c == $i and $val ) { $matrix: matrix-set($matrix, ($r $c), $val); }
+
+        }
+        
+        $n: $n + 1;
+        $i: $i + 1;
+
+      }
+
+    }
+
+    @else {
+
+      @for $r from 1 through length($matrix) { 
+        
+        $row: nth($matrix, $r);
+        
+        @for $c from 1 through length($row) {
+          
+          @if( $c == $i ) { $matrix: matrix-set($matrix, ($r $c), $value); }
+          
+        }
+        
+        $i: $i + 1;
+
+      }
+
+    }
+    
+  }
+  
+  // Set values starting at top-right edge.
+  @else {
+    
+    $i: length(first($matrix));
+    
+    @if( is-list($value) ) {
+      
+      $n: 1;
+    
+      @for $r from 1 through length($matrix) { 
+
+        $row: nth($matrix, $r);
+        
+        $val: nth($value, $n);
+
+        @for $c from 1 through length($row) {
+
+          @if( $c == $i and $val ) { $matrix: matrix-set($matrix, ($r $c), $val); }
+
+        }
+        
+        $n: $n + 1;
+        $i: $i - 1;
+
+      }
+
+    }
+
+    @else {
+
+      @for $r from 1 through length($matrix) { 
+        
+        $row: nth($matrix, $r);
+        
+        @for $c from 1 through length($row) {
+          
+          @if( $c == $i ) { $matrix: matrix-set($matrix, ($r $c), $value); }
+          
+        }
+        
+        $i: $i - 1;
+
+      }
+
+    }
+    
+  }
+  
+  @return $matrix;
+  
+}
+
+/// Sets all values on a given row with the new value
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-list
+/// @requires {function} matrix-set
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $row - The row number to be used
+/// @param {string | list} $value - One or more values to set in the given matrix
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-set-row` on non-matrix `#{$matrix}`.'
+@function matrix-set-row( $matrix, $row, $value ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-set-row` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( is-list($value) ) {
+    
+    @for $r from 1 through length($matrix) { 
+      
+      @if( $r == $row ) {
+      
+        $row: nth($matrix, $r);
+        
+        $n: 1;
+
+        @for $c from 1 through length($row) {
+
+          $val: nth($value, $n);
+
+          @if( $val ) { $matrix: matrix-set($matrix, ($r $c), $val); }
+          
+          $n: $n + 1;
+
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+  @else {
+    
+    @for $r from 1 through length($matrix) { 
+      
+      @if( $r == $row ) {
+        
+        $row: nth($matrix, $r);
+      
+        @for $c from 1 through length($row) { $matrix: matrix-set($matrix, ($r $c), $value); }
+        
+      }
+      
+    }
+    
+  }
+  
+  @return $matrix;
+  
+}
+
+/// Sets all values on a given column with the new value
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-list
+/// @requires {function} matrix-set
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $column - The column number to be used
+/// @param {string | list} $value - One or more values to set in the given matrix
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-set-column` on non-matrix `#{$matrix}`.'
+@function matrix-set-column( $matrix, $column, $value ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-set-column` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( is-list($value) ) {
+    
+    $n: 1;
+    
+    @for $r from 1 through length($matrix) { 
+      
+      $row: nth($matrix, $r);
+      
+      $val: nth($value, $n);
+      
+      @for $c from 1 through length($row) {
+        
+        $col: nth($row, $c);
+        
+        @if( $c == $column and $val ) { $matrix: matrix-set($matrix, ($r $c), $val); }
+        
+      }
+      
+      $n: $n + 1;
+      
+    }
+    
+  }
+  
+  @else {
+    
+    @for $r from 1 through length($matrix) { 
+      
+      $row: nth($matrix, $r);
+      
+      @for $c from 1 through length($row) {
+        
+        @if( $c == $column ) { $matrix: matrix-set($matrix, ($r $c), $value); }
+        
+      }
+      
+    }
+    
+  }
+  
+  @return $matrix;
+  
+}
+
+/// Gets an values from within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} are-coords
+/// @param {matrix} $matrix - Some matrix
+/// @param {list} $coordinates - A set of matrix coordinates where the `row` value preceeds the `column` value
+/// @returns {mixed}
+/// @throws 'Cannot execute `matrix-get` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-get` expects valid coordinates for argument `$coordinates` but `#{$coordinates}` was given.'
+@function matrix-get( $matrix, $coordinates ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-get` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not are-coords($coordinates) ) {
+    
+    @error 'Function `matrix-get` expects valid coordinates for argument `$coordinates` but `#{$coordinates}` was given.';
+    
+  }
+  
+  $row: first($coordinates);
+  $column: last($coordinates);
+  
+  @return nth(nth($matrix, $row), $column);
+  
+}
+
+/// Gets all values on a diagonal from within the given matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} contains
+/// @param {matrix} $matrix - Some matrix
+/// @param {string} $direction - Designates the starting edge relative to the top
+/// @returns {list}
+/// @throws 'Cannot execute `matrix-get-diagonal` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-get-diagonal` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.'
+@function matrix-get-diagonal( $matrix, $direction: left ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-get-diagonal` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not contains(left right, $direction) ) {
+    
+    @error 'Function `matrix-get-diagonal` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.';
+    
+  }
+  
+  $result: ();
+  
+  // Get values starting at top-left.
+  @if( $direction == left ) {
+    
+    $i: 1;
+    
+    @each $row in $matrix {
+      
+      @each $column in $row {
+        
+        $n: index($row, $column);
+        
+        @if( $i == $n ) { $result: append($result, $column); }
+        
+      }
+      
+      $i: $i + 1;
+      
+    }
+    
+  }
+  
+  // Get values starting at top-right.
+  @else {
+    
+    $i: length(first($matrix));
+    
+    @each $row in $matrix {
+      
+      @each $column in $row {
+        
+        $n: index($row, $column);
+        
+        @if( $i == $n ) { $result: append($result, $column); }
+        
+      }
+      
+      $i: $i - 1;
+      
+    }
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Gets all values from a given row within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-number
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $row - The row number to be used
+/// @returns {list}
+/// @throws 'Cannot execute `matrix-get-row` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-get-row` expects a number for argument `$row` but `#{$row}` was given.'
+@function matrix-get-row( $matrix, $row ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-get-row` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not is-number($row) ) {
+    
+    @error 'Function `matrix-get-row` expects a number for argument `$row` but `#{$row}` was given.';
+    
+  }
+  
+  @return nth($matrix, $row);
+  
+}
+
+/// Gets all values from a given column within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-number
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $column - The column number to be used
+/// @returns {list}
+/// @throws 'Cannot execute `matrix-get-column` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-get-column` expects a number for argument `$column` but `#{$column}` was given.'
+@function matrix-get-column( $matrix, $column ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-get-column` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not is-number($column) ) {
+    
+    @error 'Function `matrix-get-column` expects a number for argument `$column` but `#{$column}` was given.';
+    
+  }
+  
+  $result: ();
+  
+  @each $row in $matrix {
+    @each $col in $row {
+      
+      $n: index($row, $col);
+      
+      @if( $n == $column ) { $result: append($result, $col); }
+      
+    }
+  }
+  
+  @return $result;
+  
+}
+
+/// Get the coordinates of a given value within a matrix
+/// 
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @param {mixed} $value - Some value to be searched for
+/// @returns {list} - A list of one or more cordinates in the form `(row, column)`
+/// @throws 'Cannot execute `matrix-coords` on non-matrix `#{$matrix}`.'
+/// @throws 'Cannot execute `matrix-coords` since matrix does not contain the value `#{$value}`.'
+@function matrix-coords( $matrix, $value ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-coords` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not matrix-has-value($matrix, $value ) ) {
+    
+    @error 'Cannot execute `matrix-coords` since matrix does not contain the value `#{$value}`.';
+    
+  }
+  
+  $coords: ();
+  
+  @for $r from 1 through length($matrix) {
+    
+    $row: nth($matrix, $r);
+    
+    @for $c from 1 through length($row) {
+      
+      $column: nth($row, $c);
+      
+      @if( $column == $value ) { $coords: append($coords, ($r, $c)); }
+      
+    }
+    
+  }
+  
+  @if( length($coords) == 1 ) { @return first($coords); }
+  
+  @return $coords;
+  
+}
+
+/// Determines if a matrix has the given value
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @param {mixed} $value - Some value to be searched for
+/// @returns {boolean}
+/// @throws 'Cannot execute `matrix-has-value` on non-matrix `#{$matrix}`.'
+@function matrix-has-value( $matrix, $value ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-has-value` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $result: false;
+  
+  @each $row in $matrix {
+    @each $column in $row {
+      
+      @if( $column == $value ) { $result: true; }
+      
+    }
+  }
+  
+  @return $result;
+  
+}
+
+/// Swaps the items for two coordinates within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} are-coords
+/// @param {matrix} $matrix - Some matrix
+/// @param {list} $coordinates1 - A set of matrix coordinates where the `row` value preceeds the `column` value
+/// @param {list} $coordinates2 - A set of matrix coordinates where the `row` value preceeds the `column` value
+/// @returns {matrix}
+/// @throws 'Cannot count `matrix-swap` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-swap` expects valid coordinates for argument `$coordinates1` but `#{$coordinates1}` was given.'
+/// @throws 'Function `matrix-swap` expects valid coordinates for argument `$coordinates2` but `#{$coordinates2}` was given.'
+@function matrix-swap( $matrix, $coordinates1, $coordinates2 ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-swap` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not are-coords($coordinates1) ) {
+    
+    @error 'Function `matrix-swap` expects valid coordinates for argument `$coordinates1` but `#{$coordinates1}` was given.';
+    
+  }
+  
+  @if( not are-coords($coordinates2) ) {
+    
+    @error 'Function `matrix-swap` expects valid coordinates for argument `$coordinates2` but `#{$coordinates2}` was given.';
+    
+  }
+  
+  $row1: first($coordinates1);
+  $column1: last($coordinates1);
+  $row2: first($coordinates2);
+  $column2: last($coordinates2);
+  
+  $value1: matrix-get($matrix, $coordinates1);
+  $value2: matrix-get($matrix, $coordinates2);
+  
+  $matrix: matrix-set($matrix, $coordinates1, $value2);
+  $matrix: matrix-set($matrix, $coordinates2, $value1);
+  
+  @return $matrix;
+  
+}
+
+/// Swaps two values within a matrix
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @param {mixed} $value1 - Some value to be swapped
+/// @param {mixed} $value2 - Another value to be swapper
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-swap-values` on non-matrix `#{$matrix}`.'
+@function matrix-swap-values( $matrix, $value1, $value2 ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-swap-values` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $result: ();
+  
+  @each $row in $matrix {
+    
+    $new: ();
+    
+    @each $column in $row {
+      
+      @if( $column == $value1 ) { $new: append($new, $value2); }
+      @else if( $column == $value2 ) { $new: append($new, $value1); }
+      @else { $new: append($new, $column); }
+      
+    }
+    
+    $result: append($result, $new);
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Swaps two rows within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-number
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $row1 - A row number of the row to be swapped
+/// @param {number} $row2 - Another row number of the row to be swapped
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-swap-rows` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-swap-rows` expects a number for argument `$row1` but `#{type-of($row1)}` was given.'
+/// @throws 'Function `matrix-swap-rows` expects a number for argument `$row2` but `#{type-of($row2)}` was given.'
+@function matrix-swap-rows( $matrix, $row1, $row2 ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-swap-rows` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not is-number($row1) ) {
+    
+    @error 'Function `matrix-swap-rows` expects a number for argument `$row1` but `#{type-of($row1)}` was given.';
+    
+  }
+  
+  @if( not is-number($row2) ) {
+    
+    @error 'Function `matrix-swap-rows` expects a number for argument `$row2` but `#{type-of($row2)}` was given.';
+    
+  }
+  
+  $result: ();
+  
+  @each $row in $matrix {
+    
+    $n: index($matrix, $row);
+    
+    @if( $n == $row1 ) {  $result: append($result, nth($matrix, $row2)); }
+    @else if( $n == $row2 ) { $result: append($result, nth($matrix, $row1)); }
+    @else { $result: append($result, $row); }
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Swaps two columns within a matrix
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-number
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $column1 - A column number of the column to be swapped
+/// @param {number} $column2 - Another column number of the column to be swapped
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-swap-columns` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-swap-columns` expects a number for argument `$column1` but `#{type-of($column1)}` was given.'
+/// @throws 'Function `matrix-swap-columns` expects a number for argument `$column2` but `#{type-of($column2)}` was given.'
+@function matrix-swap-columns( $matrix, $column1, $column2 ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-swap-columns` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not is-number($column1) ) {
+    
+    @error 'Function `matrix-swap-columns` expects a number for argument `$column1` but `#{type-of($column1)}` was given.';
+    
+  }
+  
+  @if( not is-number($column2) ) {
+    
+    @error 'Function `matrix-swap-columns` expects a number for argument `$column2` but `#{type-of($column2)}` was given.';
+    
+  }
+  
+  $result: ();
+  
+  @each $row in $matrix {
+    
+    $new: ();
+    
+    @each $column in $row {
+      
+      $n: index($row, $column);
+      
+      @if( $n == $column1 ) { $new: append($new, nth($row, $column2)); }
+      @else if( $n == $column2 ) { $new: append($new, nth($row, $column1)); }
+      @else { $new: append($new, $column); }
+      
+    }
+    
+    $result: append($result, $new);
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Replaces the `$old` value within a matrix with the `$new` value
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @param {mixed} $old - Some old value to be removed
+/// @param {mixed} $new - Some new value to be inserted
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-replace` on non-matrix `#{$matrix}`.'
+@function matrix-replace( $matrix, $old, $new ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-replace` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @for $r from 1 through length($matrix) {
+    
+    $row: nth($matrix, $r);
+    
+    @for $c from 1 through length($row) {
+      
+      $column: nth($row, $c);
+      
+      @if( $column == $old ) {
+        
+        $matrix: matrix-set($matrix, ($r $c), $new);
+        
+      }
+      
+    }
+    
+  }
+  
+  @return $matrix;
+  
+}
+
+/// Replaces the `$row` at the given index with the `$new` row
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-number
+/// @requires {function} is-string
+/// @requires {function} matrix-columns
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $row - The row number to be replaced
+/// @param {list | string} $new - The new row contents to be inserted
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-replace-row` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-replace-row` expects a number for argument `$row` but `#{type-of($row)}` was given.'
+/// @throws 'Function `matrix-replace-row` expects a string or list for argument `$new` but `#{type-of($new)}` was given.'
+@function matrix-replace-row( $matrix, $row, $new ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-replace-row` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not is-number($row) ) {
+    
+    @error 'Function `matrix-replace-row` expects a number for argument `$row` but `#{type-of($row)}` was given.';
+    
+  }
+  
+  @if( not is-list($new) and not is-string($new) ) {
+    
+    @error 'Function `matrix-replace-row` expects a string or list for argument `$new` but `#{type-of($new)}` was given.';
+    
+  }
+  
+  $length: matrix-columns($matrix);
+  
+  @if( $length != length($new) ) {
+    
+    $string: $new;
+    
+    $new: ();
+    
+    @for $i from 1 through $length { $new: append($new, $string);  }
+    
+  }
+  
+  $result: ();
+  
+  @for $r from 1 through length($matrix) {
+    
+    $old: nth($matrix, $r);
+    
+    @if( $r == $row ) { $result: append($result, $new); }
+    @else { $result: append($result, $old); }
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Replaces the `$column` at the given index with the `$new` column
+///
+/// @requires {function} is-matrix
+/// @requires {function} is-number
+/// @requires {function} is-string
+/// @requires {function} matrix-rows
+/// @param {matrix} $matrix - Some matrix
+/// @param {number} $column - The column number to be replaced
+/// @param {list | string} $new - The new column contents to be inserted
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-replace-column` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-replace-column` expects a number for argument `$column` but `#{type-of($column)}` was given.'
+/// @throws 'Function `matrix-replace-column` expects a string or list for argument `$new` but `#{type-of($new)}` was given.'
+@function matrix-replace-column( $matrix, $column, $new ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-replace-column` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not is-number($column) ) {
+    
+    @error 'Function `matrix-replace-column` expects a number for argument `$column` but `#{type-of($column)}` was given.';
+    
+  }
+  
+  @if( not is-list($new) and not is-string($new) ) {
+    
+    @error 'Function `matrix-replace-column` expects a string or list for argument `$new` but `#{type-of($new)}` was given.';
+    
+  }
+  
+  $length: matrix-rows($matrix);
+  
+  @if( $length != length($new) ) {
+    
+    $string: $new;
+    
+    $new: ();
+    
+    @for $i from 1 through $length { $new: append($new, $string);  }
+    
+  }
+  
+  $result: ();
+  
+  $n: 1;
+  
+  @for $r from 1 through length($matrix) {
+    
+    $value: nth($new, $n);
+    
+    $row: nth($matrix, $r);
+    
+    $replace: ();
+    
+    @for $c from 1 through length($row) {
+      
+      $col: nth($row, $c);
+    
+      @if( $c == $column ) { $replace: append($replace, $value); }
+      @else { $replace: append($replace, $col); }
+      
+    }
+    
+    $result: append($result, $replace);
+    
+    $n: $n + 1;
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Shuffles the values within a matrix
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @returns {matrix}
+/// @throws 'Cannot execute `matrix-shuffle` on non-matrix `#{$matrix}`.'
+@function matrix-shuffle( $matrix ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-shuffle` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $rows: matrix-rows( $matrix );
+  $square: matrix-is-square( $matrix );
+  $flattened: flatten($matrix, 2);
+  $shuffled: shuffle($flattened);
+  
+  @return matrix-from( $rows, $shuffled, $square );
+  
+}
+
+/// Determines if a matrix has an equal number of columns on all rows
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @returns {boolean}
+/// @throws 'Cannot count `matrix-is-square` on non-matrix `#{$matrix}`.'
+@function matrix-is-square( $matrix ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-is-square` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @return matrix-columns($matrix, true) == matrix-columns($matrix, false);
+  
+}
+
+/// Determines if a matrix has all values set in a diagonal while all other values are equal to `0`
+///
+/// @requires {function} is-matrix
+/// @requires {function} contains
+/// @param {matrix} $matrix - Some matrix
+/// @param {string} $direction - Designates the starting edge relative to the top
+/// @returns {boolean}
+/// @throws 'Cannot execute `matrix-is-diagonal` on non-matrix `#{$matrix}`.'
+/// @throws Function `matrix-is-diagonal` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.'
+@function matrix-is-diagonal( $matrix, $direction: left ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-is-diagonal` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not contains(left right, $direction) ) {
+    
+    @error 'Function `matrix-is-diagonal` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.';
+    
+  }
+  
+  $diagonal: ();
+  $elsewhere: ();
+  
+  // Start at the top-left edge
+  @if( $direction == left ) {
+    
+    $i: 1;
+    
+    @each $row in $matrix {
+      
+      @for $n from 1 through length($row) {
+        
+        $column: nth($row, $n);
+      
+        @if( $n == $i ) { $diagonal: append($diagonal, $column); }
+        @else { $elsewhere: append($elsewhere, $column); }
+        
+      }
+      
+      $i: $i + 1;
+      
+    }
+    
+  }
+  
+  // Start at the top-right edge
+  @else {
+    
+    $i: length(first($matrix));
+    
+    @each $row in $matrix {
+      
+      @for $n from 1 through length($row) {
+        
+        $column: nth($row, $n);
+      
+        @if( $n == $i ) { $diagonal: append($diagonal, $column); }
+        @else { $elsewhere: append($elsewhere, $column); }
+        
+      }
+      
+      $i: $i - 1;
+      
+    }
+    
+  }
+  
+  // Compare and return
+  @return every($diagonal, 'neq', 0) and every($elsewhere, 'eq', 0);
+  
+}
+
+/// Determines if a matrix has all values *above* its diagonal set while all other values are equal to `0`
+///
+/// @requires {function} is-matrix
+/// @requires {function} contains
+/// @param {matrix} $matrix - Some matrix
+/// @param {string} $direction - Designates the starting edge relative to the top
+/// @throws 'Cannot execute `matrix-is-upper-triangular` on non-matrix `#{$matrix}`.'
+/// @returns {boolean}
+/// @throws 'Cannot execute `matrix-is-upper-triangular` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-is-upper-triangular` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.'
+@function matrix-is-upper-triangular( $matrix, $direction: left ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-is-upper-triangular` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not contains(left right, $direction) ) {
+    
+    @error 'Function `matrix-is-upper-triangular` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.';
+    
+  }
+  
+  $diagonal: ();
+  $upper: ();
+  $lower: ();
+  
+  // Start at the top-left edge
+  @if( $direction == left ) {
+    
+    $i: 1;
+    
+    @each $row in $matrix {
+      
+      @for $n from 1 through length($row) {
+        
+        $column: nth($row, $n);
+      
+        @if( $n == $i ) { $diagonal: append($diagonal, $column); }
+        @else if( $n > $i ) { $upper: append($upper, $column); }
+        @else { $lower: append($lower, $column); }
+        
+      }
+      
+      $i: $i + 1;
+      
+    }
+    
+  }
+  
+  // Start at the top-right edge
+  @else {
+    
+    $i: length(first($matrix));
+    
+    @each $row in $matrix {
+      
+      @for $n from 1 through length($row) {
+        
+        $column: nth($row, $n);
+      
+        @if( $n == $i ) { $diagonal: append($diagonal, $column); }
+        @else if( $n < $i ) { $upper: append($upper, $column); }
+        @else { $lower: append($lower, $column); }
+        
+      }
+      
+      $i: $i - 1;
+      
+    }
+    
+  }
+  
+  // Compare and return
+  @return every($diagonal, 'eq', 0) and every($lower, 'eq', 0) and every($upper, 'neq', 0);
+  
+}
+
+/// Determines if a matrix has all values *below* its diagonal set while all other values are equal to `0`
+///
+/// @requires {function} is-matrix
+/// @requires {function} contains
+/// @param {matrix} $matrix - Some matrix
+/// @param {string} $direction - Designates the starting edge relative to the top
+/// @returns {boolean}
+/// @throws 'Cannot execute `matrix-is-lower-triangular` on non-matrix `#{$matrix}`.'
+/// @throws 'Function `matrix-is-lower-triangular` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.'
+@function matrix-is-lower-triangular( $matrix, $direction: left ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-is-lower-triangular` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  @if( not contains(left right, $direction) ) {
+    
+    @error 'Function `matrix-is-lower-triangular` expects `left` or `right` for argument `$direction` but `#{$direction}` was given.';
+    
+  }
+  
+  $diagonal: ();
+  $upper: ();
+  $lower: ();
+  
+  // Start at the top-left edge
+  @if( $direction == left ) {
+    
+    $i: 1;
+    
+    @each $row in $matrix {
+      
+      @for $n from 1 through length($row) {
+        
+        $column: nth($row, $n);
+      
+        @if( $n == $i ) { $diagonal: append($diagonal, $column); }
+        @else if( $n > $i ) { $upper: append($upper, $column); }
+        @else { $lower: append($lower, $column); }
+        
+      }
+      
+      $i: $i + 1;
+      
+    }
+    
+  }
+  
+  // Start at the top-right edge
+  @else {
+    
+    $i: length(first($matrix));
+    
+    @each $row in $matrix {
+      
+      @for $n from 1 through length($row) {
+        
+        $column: nth($row, $n);
+      
+        @if( $n == $i ) { $diagonal: append($diagonal, $column); }
+        @else if( $n < $i ) { $upper: append($upper, $column); }
+        @else { $lower: append($lower, $column); }
+        
+      }
+      
+      $i: $i - 1;
+      
+    }
+    
+  }
+  
+  // Compare and return
+  @return every($diagonal, 'eq', 0) and every($lower, 'neq', 0) and every($upper, 'eq', 0);
+  
+}
+
+/// Pretty prints a matrix as a string
+///
+/// @requires {function} is-matrix
+/// @param {matrix} $matrix - Some matrix
+/// @throws 'Cannot execute `matrix-print` on non-matrix `#{$matrix}`.'
+@function matrix-print( $matrix ) {
+  
+  @if( not is-matrix($matrix) ) {
+    
+    @error 'Cannot execute `matrix-print` on non-matrix `#{$matrix}`.';
+    
+  }
+  
+  $break: '\a ';
+  $space: '  ';
+  $result: '#{$break}#{$break}';
+  
+  @each $row in $matrix {
+    
+    $line: '';
+    
+    @each $column in $row {
+      
+      $line: $line + '#{$space}#{$column}';
+      
+    }
+    
+    $result: $result + '#{$line}#{$break}';
+    
+  }
+  
+  $result: $result + '#{$break}';
+  
+  @return $result;
+  
+}
+
+/// Determines if a set of given coordinates are valid
+///
+/// @requires {function} is-list
+/// @requires {function} is-number
+/// @requires {function} first
+/// @requires {function} last
+/// @param {list} $coordinates - A set of matrix coordinates where the `row` value preceeds the `column` value
+/// @returns {boolean}
+@function are-coords( $coordinates ) {
+  
+  @if( not is-list($coordinates) ) { @return false; }
+  @if( length($coordinates) != 2 ) { @return false; }
+  @if( not is-number(first($coordinates)) ) { @return false; }
+  @if( not is-number(last($coordinates)) ) { @return false; }
+  @return true;
+    
+}

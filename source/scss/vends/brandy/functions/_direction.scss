@@ -1,0 +1,33 @@
+/// Inverts one or more directions
+///
+/// @param {arglist} $directions - Directions to be inverted
+/// @throws 'No opposite direction found for `#{$direction}`.'
+/// @returns {string | list}
+@function opposite-direction( $directions... ) {
+  
+  $opposites: ();
+  
+  $map: (
+    'top':    'bottom',
+    'right':  'left',
+    'bottom': 'top',
+    'left':   'right',
+    'ltr':    'rtl',
+    'rtl':    'ltr'
+  );
+  
+  @each $direction in $directions {
+    
+    @if( not map-has-key($map, $direction) ) {
+      
+      @error 'No opposite direction found for `#{$direction}`.';
+      
+    }
+    
+    $opposites: append($opposites, unquote(map-get($map, $direction)));
+    
+  }
+  
+  @return $opposites;
+  
+}

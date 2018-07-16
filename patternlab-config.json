@@ -29,6 +29,7 @@
       "scss": "./public/scss/"
     },
     "dist": {
+      "root": "./dist/",
       "js": "./dist/<%= pkg.version %>/js/",
       "images": "./dist/<%= pkg.version %>/images/",
       "fonts": "./dist/<%= pkg.version %>/fonts/",
@@ -98,5 +99,6 @@
         ]
       }
     }
-  }
+  },
+  "extensionPath": "./source/js/utils/extensions.js"
 }

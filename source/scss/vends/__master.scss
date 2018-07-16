@@ -1,4 +1,4 @@
-/** 
+/**
  * Use this file to load and aggregate third-party vendor
  * add-ins. Vendor-specific files should be stored within
  * named subdirectories. This may require changing any
@@ -6,8 +6,6 @@
  * files.
  */
 
-@import 'normalize';
-@import 'bourbon';
 @import 'brandy';
 @import 'breakpoint';
 @import 'fontawesome';

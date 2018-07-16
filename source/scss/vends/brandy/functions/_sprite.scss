@@ -1,0 +1,429 @@
+////
+/// @group brandy-sprite
+////
+
+/// Builds a sprite object for easy manipulation
+///
+/// @requires {function} is-string
+/// @requires {function} is-number
+/// @requires {function} is-list
+/// @requires {function} unique
+/// @requires {function} matrix-from
+/// @requires {function} first
+/// @requires {function} last
+/// @param {string} $image -  Some path for an image sprite
+/// @param {number} $rows - The number of rows in the image sprite
+/// @param {list} $ids - A list of unique identifiers for each image within the sprite
+/// @param {list} $size - A list of numbers containing the `width` and `height` of each image in the sprite
+/// @param {number} $spacing [0] - The amount of spacing between each image in the sprite
+/// @return {sprite}
+/// @throws 'Function `sprite` expects a string for argument `$image` but `#{type-of($image)}` was given.'
+/// @throws 'Function `sprite` expects a number for argument `$rows` but `#{type-of($rows)}` was given.'
+/// @throws 'Function `sprite` expects a list for argument `$ids` but `#{type-of($ids)}` was given.'
+/// @throws 'Function `sprite` expects all items in list `$ids` to be unique.'
+/// @throws 'Function `sprite` expects a list for argument `$size` but `#{type-of($size)}` was given.'
+/// @throws 'Function `sprite` expects argument `$size` to have a length of `2` but length was `#{length($size)}`.'
+/// @throws 'Function `sprite` expects a number for first item, width, in list `$size` but `#{type-of($width)}` was given.'
+/// @throws 'Function `sprite` expects a number for second item, height, in list `$size` but `#{type-of($height)}` was given.'
+/// @throws 'Function `sprite` expects a number for argument `$spacing` but `#{type-of($spacing)}` was given.'
+@function sprite( $image, $rows, $ids, $size, $spacing: 0 ) {
+  
+  @if( not is-string($image) ) {
+    
+    @error 'Function `sprite` expects a string for argument `$image` but `#{type-of($image)}` was given.';
+    
+  }
+  
+  @if( not is-number($rows) ) {
+    
+    @error 'Function `sprite` expects a number for argument `$rows` but `#{type-of($rows)}` was given.';
+    
+  }
+  
+  @if( not is-list($ids) ) {
+    
+    @error 'Function `sprite` expects a list for argument `$ids` but `#{type-of($ids)}` was given.';
+    
+  }
+  
+  @if( unique($ids) != $ids ) {
+    
+    @error 'Function `sprite` expects all items in list `$ids` to be unique.';
+    
+  }
+  
+  $square: length($ids) % 2 == 0;
+  
+  @if( not is-list($size) ) {
+    
+    @error 'Function `sprite` expects a list for argument `$size` but `#{type-of($size)}` was given.';
+    
+  }
+  
+  @if( length($size) != 2 ) {
+    
+    @error 'Function `sprite` expects argument `$size` to have a length of `2` but length was `#{length($size)}`.';
+    
+  }
+  
+  $width: first($size);
+  $height: last($size);
+  
+  @if( not is-number($width) ) {
+    
+    @error 'Function `sprite` expects a number for first item, width, in list `$size` but `#{type-of($width)}` was given.';
+    
+  }
+  
+  @if( not is-number($height) ) {
+    
+    @error 'Function `sprite` expects a number for second item, height, in list `$size` but `#{type-of($height)}` was given.';
+    
+  }
+  
+  @if( not is-number($spacing) ) {
+    
+    @error 'Function `sprite` expects a number for argument `$spacing` but `#{type-of($spacing)}` was given.';
+    
+  }
+  
+  @return (
+    url: $image,
+    width: $width,
+    height: $height,
+    spacing: $spacing,
+    matrix: matrix-from($rows, $ids, $square)
+  );
+  
+}
+
+/// Gets the image path of an image sprite with a sprite object
+///
+/// @requires {function} is-sprite
+/// @param {sprite} $sprite - Some sprite object
+/// @returns {string}
+/// @throws 'Cannot execute `sprite-url` on non-sprite `#{$sprite}`.'
+@function sprite-url( $sprite ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-url` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  @return map-get($sprite, url);
+
+}
+
+/// Sets the image path associated with a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} is-string
+/// @param {sprite} $sprite - Some sprite object
+/// @param {string} $url - A path to an image sprite
+/// @returns {sprite}
+/// @throws 'Cannot execute `sprite-set-url` on non-sprite `#{$sprite}`.'
+/// @throws 'Function `sprite-set-url` expects a string for argument `$url` but `#{type-of($url)}` was given.'
+@function sprite-set-url( $sprite, $url ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-set-url` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  @if( not is-string($url) ) {
+    
+    @error 'Function `sprite-set-url` expects a string for argument `$url` but `#{type-of($url)}` was given.';
+    
+  }
+  
+  @return map-set($sprite, url, $url);
+
+}
+
+/// Gets the spacing between images within a sprite
+///
+/// @requires {function} is-sprite
+/// @param {sprite} $sprite - Some sprite object
+/// @returns {number}
+/// @throws 'Cannot execute `sprite-spacing` on non-sprite `#{$sprite}`.'
+@function sprite-spacing( $sprite ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-spacing` on non-sprite `#{$sprite}`.';
+    
+  }
+
+  $spacing: map-get($sprite, spacing);
+  
+  @if( unitless($spacing) ) { $spacing: $spacing + 0px; }
+  
+  @return $spacing;
+
+
+}
+
+/// Sets the spacing between images within a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} is-number
+/// @requires {function} map-set
+/// @param {sprite} $sprite - Some sprite object
+/// @param {number} $spacing - The amount of spacing between images within the sprite
+/// @returns {sprite}
+/// @throws 'Cannot execute `sprite-set-spacing` on non-sprite `#{$sprite}`.'
+/// @throws 'Function `sprite-set-spacing` expects a number for argument `$spacing` but `#{type-of($spacing)}` was given.'
+@function sprite-set-spacing( $sprite, $spacing ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-set-spacing` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  @if( not is-number($spacing) ) {
+    
+    @error 'Function `sprite-set-spacing` expects a number for argument `$spacing` but `#{type-of($spacing)}` was given.';
+    
+  }
+  
+  @return map-set($sprite, spacing, $spacing);
+
+}
+
+/// Gets the width of the images within a sprite
+///
+/// @requires {function} is-sprite
+/// @param {sprite} $sprite - Some sprite object
+/// @returns {number}
+/// @throws 'Cannot execute `sprite-width` on non-sprite `#{$sprite}`.'
+@function sprite-width( $sprite ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-width` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  $width: map-get($sprite, width);
+  
+  @if( unitless($width) ) { $width: $width + 0px; }
+  
+  @return $width;
+
+}
+
+/// Sets the width of the images within a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} is-number
+/// @requires {function} map-set
+/// @param {sprite} $sprite - Some sprite object
+/// @param {number} $width - The width of each image in the sprite
+/// @returns {sprite}
+/// @throws 'Cannot execute `sprite-set-width` on non-sprite `#{$sprite}`.'
+/// @throws 'Function `sprite-set-width` expects a number for argument `$width` but `#{type-of($width)}` was given.'
+@function sprite-set-width( $sprite, $width ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-set-width` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  @if( not is-number($width) ) {
+    
+    @error 'Function `sprite-set-width` expects a number for argument `$width` but `#{type-of($width)}` was given.';
+    
+  }
+  
+  @return map-set($sprite, width, $width);
+
+}
+
+/// Gets the height of the images within a sprite
+///
+/// @requires {function} is-sprite
+/// @param {sprite} $sprite - Some sprite object
+/// @returns {number}
+/// @throws 'Cannot execute `sprite-height` on non-sprite `#{$sprite}`.'
+@function sprite-height( $sprite ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-height` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  $height: map-get($sprite, height);
+  
+  @if( unitless($height) ) { $height: $height + 0px; }
+  
+  @return $height;
+
+}
+
+/// Sets the height of the images within a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} is-number
+/// @requires {function} map-set
+/// @param {sprite} $sprite - Some sprite object
+/// @param {number} $height - The height of each image in the sprite
+/// @returns {sprite}
+/// @throws 'Cannot execute `sprite-set-height` on non-sprite `#{$sprite}`.'
+/// @throws 'Function `sprite-set-height` expects a number for argument `$height` but `#{type-of($height)}` was given.'
+@function sprite-set-height( $sprite, $height ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-set-height` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  @if( not is-number($height) ) {
+    
+    @error 'Function `sprite-set-height` expects a number for argument `$height` but `#{type-of($height)}` was given.';
+    
+  }
+  
+  @return map-set($sprite, height, $height);
+
+}
+
+/// Gets the width and height of the images within a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} sprite-width
+/// @requires {function} sprite-height
+/// @param {sprite} $sprite - Some sprite object
+/// @returns {list} - In the format `(width height)`
+/// @throws 'Cannot execute `sprite-size` on non-sprite `#{$sprite}`.'
+@function sprite-size( $sprite ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-size` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  $width: sprite-width($sprite);
+  $height: sprite-height($sprite);
+  
+  @if( unitless($width) ) { $width: $width + 0px; }
+  @if( unitless($height) ) { $height: $height + 0px; }
+  
+  @return $width $height;
+
+}
+
+/// Sets the width and height of the images within a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} is-list
+/// @requires {function} is-number
+/// @requires {function} map-set
+/// @requires {function} first
+/// @requires {function} last
+/// @param {sprite} $sprite - Some sprite object
+/// @param {list} $size - The list of numbers correlating to the `width` and `height` of each image in the sprite
+/// @returns {sprite}
+/// @throws 'Cannot execute `sprite-set-size` on non-sprite `#{$sprite}`.'
+/// @throws 'Function `sprite-set-size` expects a list for argument `$size` but `#{type-of($size)}` was given.'
+/// @throws 'Function `sprite-set-size` expects argument `$size` to have a length of `2` but length was `#{length($size)}`.'
+/// @throws 'Function `sprite-set-size` expects a number for first item, width, in list `$size` but `#{type-of($width)}` was given.'
+/// @throws 'Function `sprite-set-size` expects a number for second item, height, in list `$size` but `#{type-of($height)}` was given.'
+@function sprite-set-size( $sprite, $size ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-set-size` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  @if( not is-list($size) ) {
+    
+    @error 'Function `sprite-set-size` expects a list for argument `$size` but `#{type-of($size)}` was given.';
+    
+  }
+  
+  @if( length($size) != 2 ) {
+    
+    @error 'Function `sprite-set-size` expects argument `$size` to have a length of `2` but length was `#{length($size)}`.';
+    
+  }
+  
+  $width: first($size);
+  $height: last($size);
+  
+  @if( not is-number($width) ) {
+    
+    @error 'Function `sprite-set-size` expects a number for first item, width, in list `$size` but `#{type-of($width)}` was given.';
+    
+  }
+  
+  @if( not is-number($height) ) {
+    
+    @error 'Function `sprite-set-size` expects a number for second item, height, in list `$size` but `#{type-of($height)}` was given.';
+    
+  }
+  
+  @return map-merge($sprite, (width: $width, height: $height));
+
+}
+
+/// Locates an item by ID within a sprite
+///
+/// @requires {function} is-sprite
+/// @requires {function} matrix-has-value
+/// @requires {function} sprite-width
+/// @requires {function} sprite-height
+/// @requires {function} sprite-spacing
+/// @requires {function} matrix-coords
+/// @requires {function} first
+/// @requires {function} last
+/// @param {sprite} $sprite - Some sprite object
+/// @param {string} $id - The identifier of the target item within the sprite object
+/// @returns {list} - In the format `(x y)`
+/// @throws 'Cannot execute `sprite-position` on non-sprite `#{$sprite}`.'
+/// @throws 'Cannot execute `sprite-position` since sprite does not contain the value `#{$id}`.'
+@function sprite-position( $sprite, $id ) {
+  
+  @if( not is-sprite($sprite) ) {
+    
+    @error 'Cannot execute `sprite-position` on non-sprite `#{$sprite}`.';
+    
+  }
+  
+  $matrix: map-get($sprite, matrix);
+  
+  @if( not matrix-has-value($matrix, $id) ) {
+    
+    @error 'Cannot execute `sprite-position` since sprite does not contain the value `#{$id}`.';
+    
+  }
+  
+  // Get size.
+  $width: sprite-width($sprite);
+  $height: sprite-height($sprite);
+  $spacing: sprite-spacing($sprite);
+  
+  @if( unitless($width) ) { $width: $width + 0px; }
+  @if( unitless($height) ) { $height: $height + 0px; }
+  @if( unittless($spacing) ) { $spacing: $spacing + 0px; }
+  
+  // Get the coordinates by ID.
+  $coords: matrix-coords($matrix, $id);
+  $row: first($coords);
+  $column: last($coords);
+    
+  $r: $row - 1;
+  $c: $column - 1;
+  $y: ($height * $r + if( $spacing, if($r > 0, ($r - 1) * $spacing, $spacing), 0 )) * -1;
+  $x: ($width * $c + if( $spacing, if($c > 0 and $spacing > 0, ($c - 1) * $spacing, $spacing), 0 )) * -1;
+  
+  @return $x $y;
+  
+}

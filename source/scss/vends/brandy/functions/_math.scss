@@ -1,0 +1,623 @@
+////
+/// @group brandy-math
+////
+
+/// Converts degrees to radians
+///
+/// @author Takeru Suzuki
+/// @requires {function} strip-unit
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @param {number} $degree - Some degree(s) to be converted
+/// @param {boolean} $unit [true] - Whether units should be included
+/// @returns {number}
+@function deg-to-rad( $degree, $unit: true ) {
+  
+  @return strip-unit($degree) * const('PI') / 180 * if($unit, 1rad, 1);
+  
+}
+
+/// Converts radians to degrees
+///
+/// @author Takeru Suzuki
+/// @requires {function} strip-unit
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @param {number} $radian - Some randian(s) to be converted
+/// @param {boolean} $unit [true] - Whether units should be included
+/// @returns {number}
+@function rad-to-deg( $radian, $unit: true ) {
+  
+  @return strip-unit($radian) * 180 / const('PI') * if($unit, 1deg, 1);
+  
+}
+
+/// Converts radians to be unitless
+///
+/// @author Takeru Suzuki
+/// @requires {function} deg-to-rad
+/// @requires {function} extract-unit
+/// @requires {function} is-number
+/// @requires {function} str-is-number
+/// @requires {function} cast-number
+/// @param {number} $angle - Some radian angle
+/// @returns {number | mixed}
+/// @throws 'Angle `#{$angle}` is not a valid number for `unitless-rad`.'
+@function unitless-rad( $angle ) {
+  
+  @if( is-string($angle) and str-is-number($angle) ) { $angle: cast-number($angle); }
+  
+  @if( unitless($angle) ) { @return $angle; }
+  @else if( extract-unit($angle) == rad ) { @return $angle / 1rad; }
+  @else if( extract-unit($angle) == deg ) { @return deg-to-rad($angle, false); }
+  @else if( not is-number($angle) or not unitless($angle) ) {
+    
+    @warn 'Angle `#{$angle}` is not a valid number for `unitless-rad`.'; 
+    @return $angle;
+    
+  }
+  
+}
+
+/// Calculates the arccosine of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @requires {function} asin
+/// @param {number} $x - Some number between -1 and 1
+/// @returns {number}
+/// @throws 'Argument for `acos` must be a number between -1 and 1.'
+///
+/// @example 
+///   acos(0.1) // 1.47063
+///   acos(-1)  // 3.14159
+@function acos( $x ) {
+  
+  @if ($x > 1 or $x < -1) {
+      
+    @warn 'Argument for `acos` must be a number between -1 and 1.';
+      
+    @return null;
+      
+  }
+    
+  @return const('PI') / 2 - asin($x);
+  
+}
+
+/// Calculates the arcsine of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} atan
+/// @requires {function} sq
+/// @param {number} $x - Some number between -1 and 1
+/// @returns {number}
+/// @throws 'Argument for `asin` must be a number between -1 and 1.'
+///
+/// @example 
+///   asin(0.1) // 0.10017
+///   asin(-1)  // -1.5708
+@function asin( $x ) {
+  
+  @if ($x > 1 or $x < -1) {
+      
+    @warn 'Argument for `asin` must be a number between -1 and 1.';
+      
+    @return null;
+      
+  }
+    
+  @return atan($x / sqrt(1 - sq($x)));
+  
+}
+
+/// Calculates the arctangent of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @requires {function} sq
+/// @param {number} $x - Some number
+/// @returns {number}
+///
+/// @example 
+///   atan(0.1) // 0.09967
+///   atan(-1)  // -0.7854
+@function atan( $x ) {
+  
+  $i: 24;
+  $sgn: 0;
+  $a: 0;
+  
+  @if( $x > 1 ) {
+    
+    $sgn: 1;
+    $x: 1 / $x;
+    
+  }
+  @else if( $x < -1 ) {
+    
+    $sgn: -1;
+    $x: 1 / $x;
+    
+  }
+  
+  @while( $i > 0 ) {
+    
+    $a: (sq($i) * sq($x)) / (2 * $i + 1 + $a);
+    $i: $i - 1;
+    
+  }
+  
+  @if( $sgn > 0 ) { @return const('PI') / 2 - $x / (1 + $a) }
+  @else if( $sgn < 0 ) { @return (-1 * const('PI')) / 2 - $x / (1 + $a); }
+  @else { @return $x / (1 + $a); }
+  
+}
+
+/// Calculates the arctangent of the quotient of the given arguments
+///
+/// @author Takeru Suzuki
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @requires {function} atan
+/// @requires {function} is-NaN
+/// @param {number} $y - Some number
+/// @param {number} $x - Some number
+/// @returns {number}
+///
+/// @example 
+///   atanq(0, 0)       // -3.14159
+///   atanq(0, -0.0)    // -3.14159
+///   atanq(-0.0, 0)    // -3.14159
+///   atanq(-0.0, -0.0) // -3.14159
+///   atanq(0, 1)       // 0
+///   atanq(0, -1)      // 3.14159
+@function atanq( $y, $x ) {
+  
+  @if( $x > 0 ) { @return atan( $y / $x ); }
+  @else if( $x < 0 ) {
+    
+    @if( $y < 0 ) { @return atan( $y / $x ) - const('PI'); }
+    @else { @return atan( $y / $x ) + const('PI'); }
+    
+  }
+  @else {
+    
+    @if( $y < 0 ) { @return (-1 * const('PI')) / 2; }
+    @else if( $y > 0 ) { @return const('PI') / 2; }
+    @else {
+      
+      @if( is-NaN(1 / $x) ) { @return 0; }
+      @else {
+        
+        @if( is-NaN(1 / $y) ) { @return const('PI'); }
+        @else { @return (-1 * const('PI')); }
+        
+      }
+      
+    }
+    
+  }
+  
+}
+
+/// Calculates the cosine of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @requires {function} unitless-rad
+/// @requires {function} sq
+/// @param {number} $x - Some number in radians or degress, assuming radians are unitless
+/// @returns {number}
+///
+/// @example 
+///   cos(0.7854) // 0.70711
+///   cos(45deg)  // 0.70711
+@function cos( $x ) {
+  
+  $x: unitless-rad($x) % (const('PI') * 2);
+  $result: 1;
+  $i: 1;
+    
+  @for $n from 1 to 24 {
+        
+    $i: $i * -1 * sq($x) / (2 * $n) / (2 * $n - 1);
+    
+    $result: $result + $i;
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Calculates the cotangent of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} unitless-rad
+/// @requires {function} tan
+/// @param {number} $x - Some number in radians or degress, assuming radians are unitless
+/// @returns {number}
+///
+/// @example 
+///   cot(0.5236) // 1.73205
+///   cot(30deg)  // 1.73205
+@function cot( $x ) {
+  
+  $x: unitless-rad($x);
+  
+  @return 1 / tan($x);
+  
+}
+
+/// Calculates the cosecant of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} unitless-rad
+/// @requires {function} sin
+/// @param {number} $x - Some number in radians or degress, assuming radians are unitless
+/// @returns {number}
+///
+/// @example 
+///   csc(1.0472) // 1.1547
+///   csc(60deg)  // 1.1547
+@function csc( $x ) {
+  
+  $x: unitless-rad($x);
+  
+  @return 1 / sin($x);
+  
+}
+
+/// Calculates `E^x`, where `x` is the argument and `E` is Euler's constant, the base of the natural logarithms
+///
+/// @author Takeru Suzuki
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @requires {function} pow
+/// @param {number} $x
+/// @example
+///   exp(1)  // 2.71828
+///   exp(-1) // 0.36788
+@function exp( $x ) {
+    
+  @return pow(const('E'), $x);
+  
+}
+
+/// Calculates the factorial of a non-negative integer
+///
+/// @author Takeru Suzuki
+/// @param {number} $x - Some non-negative number
+/// @returns {number | null}
+/// @throws 'Cannot calculate the `fact` of negative number `#{$x}`.'
+/// @throws 'Cannot calculate the `fact` of non-integer `#{$x}`.'
+///
+/// @example 
+///   fact(0) // 1
+///   fact(8) // 40320
+@function fact( $x ) {
+  
+  @if( $x < 0 ) {
+    
+    @warn 'Cannot calculate the `fact` of negative number `#{$x}`.';
+    
+    @return null
+    
+  }
+  
+  @if( $x != floor($x) ) {
+    
+    @warn 'Cannot calculate the `fact` of non-integer `#{$x}`.';
+    
+    @return null
+    
+  }
+  
+  $result: 1;
+  
+  @while( $x > 0 ) {
+    
+    $result: $result * $x;
+    
+    $x: $x - 1;
+    
+  }
+  
+  @return $result;
+  
+}
+
+/// Returns a two-element list containing the normalized fraction and exponent of a number
+///
+/// @author Takeru Suzuki
+/// @param {number} $x - Some number
+/// @returns {list} - In the form of `(fraction, exponent)`
+@function frexp( $x ) {
+  
+  $exp: 0;
+  
+  @if( $x < 0 ) { $x: $x * -1; }
+  
+  @if( $x < .5 ) { 
+  
+    @while( $x < .5 ) {
+      
+      $x: $x * 2;
+      $exp: $exp - 1;
+      
+    }
+    
+  }
+  @else if( $x >= 1 ) {
+    
+    @while( $x >= 1 ) {
+      
+      $x: $x / 2;
+      $exp: $exp + 1;
+      
+    }
+    
+  }
+    
+  @return ($x, $exp);
+  
+}
+
+/// Calculates `$x * 2^$exp`
+///
+/// @author Takeru Suzuki
+/// @param {number} $x - Some number
+/// @param {number} $exp - Some number representing an exponent
+/// @returns {number}
+@function ldexp( $x, $exp ){
+  
+  $b: if( $exp >= 0, 2, 1/2 );
+  
+  @if( $exp < 0 ) { $exp: $exp * -1; }
+  
+  @while( $exp > 0 ) {
+    
+    @if( $exp % 2 == 1 ) { $x: $x * $b; }
+    
+    $b: $b * $b;
+    $exp: floor($exp * .5);
+    
+  }
+  
+  @return $x;
+  
+}
+
+/// Calculates the natural logarithm of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} frexp
+/// @requires {function} ldexp
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @requires {function} is-null
+/// @requires {function} sq
+/// @param {number} $x - Some number
+/// @param {number | null} $b [null] - A base number
+/// @returns {number}
+///
+/// @example 
+///   log(2)     // 0.69315
+///   log(10)    // 2.30259
+///   log(2, 10) // 0.30103
+@function log( $x, $b: null ) {
+  
+  @if( not is-null($b) ) { @return log($x) / log($b) }
+  @if( $x <= 0 ) { @return 0 / 0; }
+  
+  $k: nth(frexp($x / sqrt(2)), 2);
+  $x: $x / ldexp(1, $k);
+  
+  $x: ($x - 1) / ($x + 1);
+  $sq: sq($x);
+  $i: 1;
+  $s: $x;
+  $sp: null;
+  
+  @while( $sp != $s ) {
+    
+    $x: $x * $sq;
+    $i: $i + 2;
+    $sp: $s;
+    $s: $s + $x / $i;
+    
+  }
+  
+  @return const('LN(2)') * $k + (2 * $s);
+  
+}
+
+/// Calculates the base raised to the exponent power
+///
+/// @author Takeru Suzuki
+/// @param {number} $base - The base number
+/// @param {number} $exp [1] - The exponent number
+/// @returns {number}
+///
+/// @example 
+///   pow(4, 2)   // 16
+///   pow(4, -2)  // 0.0625
+///   pow(4, 0.2) // 1.31951
+@function pow( $base, $exp: 1 ) {
+  
+  @if( $exp == floor($exp) ) {
+    
+    $r: 1;
+    $s: 0;
+    
+    @if( $exp < 0 ) {
+      
+      $exp: $exp * -1;
+      $s: 1;
+      
+    }
+    
+    @while( $exp > 0 ) {
+      
+      @if( $exp % 2 == 1 ) { $r: $r * $base; }
+      
+      $exp: floor($exp * .5);
+      $base: $base * $base;
+      
+    }
+    
+    @return if( $s != 0, 1 / $r, $r );
+    
+  }
+  @else if( $base == 0 and $exp > 0 ) { @return 0; }
+  @else {
+    
+    $e: floor($exp);
+    $r1: pow($base, $e);
+    $r2: 0;
+    
+    $x: log($base) * ($exp - $e);
+    $i: 1;
+    
+    @for $n from 0 to 24 {
+      
+      $r2: $r2 + $i;
+      $i: $i * $x / ($n + 1);
+      
+    }
+    
+    @return $r1 * $r2;
+    
+  }
+  
+}
+
+/// Calculates the base raised to the exponent `2` (squared)
+///
+/// @author Takeru Suzuki
+/// @requires {function} pow
+/// @param {number} $base - The base number
+/// @returns {number}
+///
+/// @example 
+///   sq(4)   // 16
+///   sq(2)   // 4
+///   sq(1)   // 1
+@function sq( $base ) {
+  
+  @return pow($base, 2);
+  
+}
+
+/// Calculates the base raised to the exponent `3` (cubed)
+///
+/// @author Takeru Suzuki
+/// @requires {function} pow
+/// @param {number} $base - The base number
+/// @returns {number}
+///
+/// @example 
+///   cu(4)   // 64
+///   cu(2)   // 8
+///   cu(1)   // 1
+@function cu( $base ) {
+  
+  @return pow($base, 3);
+  
+}
+
+/// Calculates the secant of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} unitless-rad
+/// @requires {function} cos
+/// @param {number} $x - Some number in radians or degress, assuming radians are unitless
+/// @returns {number}
+///
+/// @example 
+///   sec(0.7854) // 1.41422
+///   sec(45deg)  // 1.41422
+@function sec( $x ) {
+  
+  $x: unitless-rad( $x );
+  
+  @return 1 / cos($x);
+  
+}
+
+/// Calculates the sine of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} unitless-rad
+/// @requires {function} cos
+/// @requires {function} const
+/// @requires {variable} $brandy-const-map
+/// @param {number} $x - Some number in radians or degress, assuming radians are unitless
+/// @returns {number}
+///
+/// @example 
+///   sin(1.0472) // 0.86603
+///   sin(60deg)  // 0.86603
+@function sin( $x ) {
+  
+  $x: unitless-rad( $x );
+  
+  @return cos($x - const('PI') / 2);
+  
+}
+
+/// Calculates the tangent of a number
+///
+/// @author Takeru Suzuki
+/// @requires {function} unitless-rad
+/// @requires {function} cos
+/// @requires {function} sin
+/// @param {number} $x - Some number in radians or degress, assuming radians are unitless
+/// @returns {number}
+///
+/// @example 
+///   tan(0.5236) // 0.57735
+///   tan(30deg)  // 0.57735
+@function tan( $x ) {
+  
+  $x: unitless-rad( $x );
+  
+  @return sin($x) / cos($x);
+  
+}
+
+/// Calculates the square root of a number
+///
+/// @author Takeru Suzuki
+/// @param {number} $x - Some number
+/// @returns {number | null}
+/// @throws 'Cannot calculate `sqrt` of negative number `#{$x}`.'
+///
+/// @example 
+///   sqrt(2) // 1.41421
+///   sqrt(5) // 2.23607
+@function sqrt( $x ) {
+  
+  @if( $x < 0 ) {
+    
+    @warn 'Cannot calculate `sqrt` of negative number `#{$x}`.';
+    
+    @return null;
+    
+  }
+  
+  $result: 1;
+  
+  @for $i from 1 through 24 {
+    
+    $result: $result - (sq($result) - $x) / (2 * $result);
+    
+  }
+  
+  @return $result;
+  
+}

@@ -1,0 +1,298 @@
+////
+/// @group brandy-shapes
+////
+
+/// Generates a triangle shape pointing in the designated direction
+///
+/// @author Thoughtbot, Inc.
+/// @requires {function} contains
+/// @requires {mixin} size
+/// @requires {mixin} border-x
+/// @requires {mixin} border-y
+/// @requires {function} is-number
+/// @requires {function} is-color
+/// @param {string} $direction - The desired direction, either `up`, `down`, `left`, `right`, or dash-delimited `up/down` plus `left/right`
+/// @param {number} $width - The desired width of the triangle
+/// @param {number} $height - The desired height of the triangle
+/// @param {color} $color [$brandy-dark-text] - The desired color of the triangle
+/// @throws 'Mixin `triangle` cannot use invalid direction `#{$direction}`.'
+/// @throws 'Mixin `triangle` expects a number for argument `$width` but `#{type-of($width)}` was given.'
+/// @throws 'Mixin `triangle` expects a number for argument `$height` but `#{type-of($height)}` was given.'
+/// @throws 'Mixin `triangle` expects a color for argument `$color` but `#{type-of($color)}` was given.'
+@mixin triangle( $direction, $width, $height, $color: $brandy-dark-text ) {
+  
+  @if( not contains('up' 'down' 'left' 'right' 'up-right' 'down-right' 'up-left' 'down-left') ) {
+    
+    @error 'Mixin `triangle` cannot use invalid direction `#{$direction}`.';
+    
+  }
+  
+  @if( not is-number($width) ) {
+    
+    @error 'Mixin `triangle` expects a number for argument `$width` but `#{type-of($width)}` was given.';
+    
+  }
+  
+  @if( not is-number($height) ) {
+    
+    @error 'Mixin `triangle` expects a number for argument `$height` but `#{type-of($height)}` was given.';
+    
+  }
+  
+  @if( not is-color($color) ) {
+    
+    @error 'Mixin `triangle` expects a color for argument `$color` but `#{type-of($color)}` was given.';
+    
+  }
+  
+  @if( contains('up' 'down', $direction) ) {
+    
+    @include size(0);
+    @include border-x( ($height / 2) solid transparent );
+    border-#{if($direction == 'up', bottom, top)}: $width solid $color;
+    
+  }
+  
+  @else if( contains('left' 'right', $direction) ) {
+    
+    @include size(0);
+    @include border-y( ($width / 2) solid transparent );
+    border-#{if($direction == 'left', right, left)}: $height solid $color;
+    
+  }
+  
+  @else if( contains('up-left' 'up-right', $direction) ) {
+    
+    @include size(0);
+    border-top: $width solid $color;
+    border-#{if($direction == 'up-left', right, left)}: $height solid $color;
+    
+  }
+  
+  @else {
+    
+    @include size(0);
+    border-bottom: $width solid $color;
+    border-#{if($direction == 'bottom-left', right, left)}: $height solid $color;
+    
+  }
+  
+}
+
+/// Generates a chevron shape pointing in the designated direction
+///
+/// @requires {function} contains
+/// @requires {mixin} size
+/// @requires {mixin} border-x
+/// @requires {mixin} border-y
+/// @requires {function} is-number
+/// @requires {function} is-color
+/// @requires {mixin} absolute-center-within-container
+/// @param {string} $direction - The desired direction, either `up`, `down`, `left`, `right`, or dash-delimited `up/down` plus `left/right`
+/// @param {number} $size - The desired width and height of the chevron
+/// @param {number} $thickness - The desired thickness of the chevron
+/// @param {color} $color [$brandy-dark-text] - The desired color of the chevron
+/// @param {number} $radius [0] - The desired border radius of the chevron
+/// @throws 'Mixin `chevron` cannot use invalid direction `#{$direction}`.'
+/// @throws 'Mixin `chevron` expects a number for argument `$size` but `#{type-of($size)}` was given.'
+/// @throws 'Mixin `chevron` expects a color for argument `$color` but `#{type-of($color)}` was given.'
+/// @throws 'Mixin `chevron` expects a number for argument `$radius` but `#{type-of($radius)}` was given.'
+@mixin chevron( $direction, $size, $thickness, $color: $brandy-dark-text, $radius: 0 ) {
+  
+  @if( not contains('up' 'down' 'left' 'right' 'up-right' 'down-right' 'up-left' 'down-left') ) {
+    
+    @error 'Mixin `chevron` cannot use invalid direction `#{$direction}`.';
+    
+  }
+  
+  @if( not is-number($size) ) {
+    
+    @error 'Mixin `chevron` expects a number for argument `$size` but `#{type-of($size)}` was given.';
+    
+  }
+  
+  @if( not is-color($color) ) {
+    
+    @error 'Mixin `chevron` expects a color for argument `$color` but `#{type-of($color)}` was given.';
+    
+  }
+  
+  @if( not is-number($radius) ) {
+    
+    @error 'Mixin `chevron` expects a number for argument `$radius` but `#{type-of($radius)}` was given.';
+    
+  }
+  
+  position: relative;
+  @include size($size);
+  
+  &::before {
+    content: ''; 
+    display: block;
+    position: absolute;
+    @include absolute-center-within-container;
+    box-sizing: border-box;
+    @include size(100%);
+    border-width: $thickness;
+    border-color: $color;
+    border-radius: $radius;
+  }
+  
+  @if( $direction == 'up' ) {
+    
+    &::before {
+      border-style: solid none none solid;
+      top: 25%;
+      transform: rotate(45deg);
+    }
+    
+  }
+  
+  @else if( $direction == 'down' ) {
+    
+    &::before {
+      border-style: none none solid solid;
+      top: -25%;
+      transform: rotate(-45deg);
+    }
+    
+  }
+  
+  @else if( $direction == 'left' ) {
+    
+    &::before {
+      border-style: none none solid solid;
+      left: 25%;
+      transform: rotate(45deg);
+    }
+    
+  }
+  
+  @else if( $direction == 'right' ) {
+    
+    &::before {
+      border-style: none solid solid none;
+      left: -25%;
+      transform: rotate(-45deg);
+    }
+    
+  }
+  
+  @else if( $direction == 'up-left' ) {
+    
+    &::before {
+      border-style: solid none none solid;
+      top: 25%;
+      left: 25%;
+    }
+    
+  }
+  
+  @else if( $direction == 'up-right' ) {
+    
+    &::before {
+      border-style: solid solid none none;
+      top: 25%;
+      left: -25%;
+    }
+    
+  }
+  
+  @else if( $direction == 'down-left' ) {
+    
+    &::before {
+      border-style: none none solid solid;
+      top: -25%;
+      left: 25%;
+    }
+    
+  }
+  
+  @else {
+    
+    &::before {
+      border-style: none solid solid none;
+      top: -25%;
+      left: -25%;
+    }
+    
+  }
+  
+}
+
+/// Generates a circular shape, either a circle or oval dependent upon the `$width` and `$height` given
+///
+/// @requires {function} contains
+/// @requires {mixin} size
+/// @requires {function} is-number
+/// @requires {function} is-color
+/// @param {number} $width [100%] - The desired width of the circle
+/// @param {number} $height [$width] - The desired height of the circle
+/// @param {color} $color [$brandy-dark-text] - The desired color of the circle
+/// @throws 'Mixin `circle` expects a number for argument `$width` but `#{type-of($width)}` was given.'
+/// @throws 'Mixin `circle` expects a number for argument `$height` but `#{type-of($height)}` was given.'
+/// @throws 'Mixin `circle` expects a color for argument `$color` but `#{type-of($color)}` was given.'
+@mixin circle( $width: 100%, $height: $width, $color: $brandy-dark-text ) {
+  
+  @if( not is-number($width) ) {
+    
+    @error 'Mixin `circle` expects a number for argument `$width` but `#{type-of($width)}` was given.';
+    
+  }
+  
+  @if( not is-number($height) ) {
+    
+    @error 'Mixin `circle` expects a number for argument `$height` but `#{type-of($height)}` was given.';
+    
+  }
+  
+  @if( not is-color($color) ) {
+    
+    @error 'Mixin `circle` expects a color for argument `$color` but `#{type-of($color)}` was given.';
+    
+  }
+  
+  width: $width;
+  height: $height;
+  border-radius: ($height / 2) ($width / 2);
+  background-color: $color;
+  
+}
+
+/// Generates a square shape, either a square or rectangle dependent upon the `$width` and `$height` given
+///
+/// @requires {function} contains
+/// @requires {mixin} size
+/// @requires {function} is-number
+/// @requires {function} is-color
+/// @param {number} $width [100%] - The desired width of the square
+/// @param {number} $height [$width] - The desired height of the square
+/// @param {color} $color [$brandy-dark-text] - The desired color of the square
+/// @throws 'Mixin `square` expects a number for argument `$width` but `#{type-of($width)}` was given.'
+/// @throws 'Mixin `square` expects a number for argument `$height` but `#{type-of($height)}` was given.'
+/// @throws 'Mixin `square` expects a color for argument `$color` but `#{type-of($color)}` was given.'
+@mixin square( $width: 100%, $height: $width, $color: $brandy-dark-text ) {
+  
+  @if( not is-number($width) ) {
+    
+    @error 'Mixin `square` expects a number for argument `$width` but `#{type-of($width)}` was given.';
+    
+  }
+  
+  @if( not is-number($height) ) {
+    
+    @error 'Mixin `square` expects a number for argument `$height` but `#{type-of($height)}` was given.';
+    
+  }
+  
+  @if( not is-color($color) ) {
+    
+    @error 'Mixin `square` expects a color for argument `$color` but `#{type-of($color)}` was given.';
+    
+  }
+  
+  width: $width;
+  height: $height;
+  background-color: $color;
+  
+}

@@ -1,0 +1,137 @@
+////
+/// @group brandy-getters
+////
+
+/// Gets a value from the `$brandy-config-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-get
+/// @requires {variable} $brandy-config-map
+/// @requires {function} map-has-keys
+/// @param {string} $property - A property from the configuration set given in dot notation
+/// @return {mixed}
+/// @throws 'Unknown configuration `#{$property}`.'
+@function config( $property ) {
+  
+  @if ( not map-has-keys($brandy-config-map, $property) ) {
+    
+    @error 'Unknown configuration `#{$property}`.'
+    
+  }
+  
+  @return map-deep-get($brandy-config-map, $property);
+  
+}
+
+/// Gets a value from the `$brandy-const-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-get
+/// @requires {variable} $brandy-const-map
+/// @requires {function} map-has-keys
+/// @param {string} $property - A property from the constants map given in dot notation
+/// @return {mixed}
+/// @throws 'Unknown constant `#{$property}`.'
+@function const( $property ) {
+  
+  @if ( not map-has-keys($brandy-const-map, $property) ) {
+    
+    @error 'Unknown constant `#{$property}`.'
+    
+  }
+  
+  @return map-deep-get($brandy-const-map, $property);
+  
+}
+
+/// Gets a value from the `$brandy-colors-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-get
+/// @requires {function} cast-string
+/// @requires {variable} $brandy-colors-map
+/// @param {string} $property - A property from the colors map given in dot notation
+/// @param {string} $tone ['base'] - A preferred color tone
+/// @param {string} $amount [null] - A tonal amount, usually representing a percent
+/// @return {mixed}
+/// @throws 'Unknown color `#{$property}`.'
+@function color( $property, $tone: 'base', $amount: null ) {
+  
+  @if ( not map-has-key($brandy-colors-map, $property) ) {
+    
+    @error 'Unknown color `#{$property}`.'
+    
+  }
+  
+  @if( $amount == null ) {
+    
+    @return map-deep-get($brandy-colors-map, '#{$property}.#{$tone}');
+    
+  }
+  
+  @return map-deep-get($brandy-colors-map, '#{$property}.#{$tone}.#{cast-string($amount)}');
+  
+}
+
+/// Gets a value from the `$brandy-fonts-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-get
+/// @requires {variable} $brandy-fonts-map
+/// @requires {function} map-has-keys
+/// @param {string} $property - A property from the fonts map given in dot notation
+/// @return {mixed}
+/// @throws 'Unknown font `#{$property}`.'
+@function font( $property ) {
+  
+  @if ( not map-has-keys($brandy-fonts-map, $property) ) {
+    
+    @error 'Unknown font `#{$property}`.'
+    
+  }
+  
+  @return map-deep-get($brandy-fonts-map, $property);
+  
+}
+
+/// Gets a value from the `$brandy-screens-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-get
+/// @requires {variable} $brandy-screens-map
+/// @requires {function} map-has-keys
+/// @param {string} $property - A property from the screens map given in dot notation
+/// @return {mixed}
+/// @throws 'Unknown screen `#{$property}`.'
+@function screen( $property ) {
+  
+  @if ( not map-has-keys($brandy-screens-map, $property) ) {
+    
+    @error 'Unknown screen `#{$property}`.'
+    
+  }
+  
+  @return map-deep-get($brandy-screens-map, $property);
+  
+}
+
+/// Gets a value from the `$brandy-z-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-get
+/// @requires {variable} $brandy-z-map
+/// @requires {function} map-has-keys
+/// @param {string} $property - A property from the z map given in dot notation
+/// @return {mixed}
+/// @throws 'Unknown z-layer `#{$property}`.'
+@function z( $property ) {
+  
+  @if ( not map-has-keys($brandy-z-map, $property) ) {
+    
+    @error 'Unknown z-layer `#{$property}`.'
+    
+  }
+  
+  @return map-deep-get($brandy-z-map, $property);
+  
+}

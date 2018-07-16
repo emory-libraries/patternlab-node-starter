@@ -1,0 +1,134 @@
+////
+/// @group brandy-setters
+////
+
+/// Sets a value in the `$brandy-config-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-set
+/// @requires {function} map-has-keys
+/// @requires {variable} $brandy-config-map
+/// @param {string} $key - A key in the configuration set given in dot notation
+/// @param {mixed} $value - Some value
+/// @param {boolean} $overwrite [false] - Allows or disallows overwriting of existing properties
+/// @throws 'Configuration `#{$key}` already exists and overwriting was not permitted.'
+@mixin config( $key, $value, $overwrite: false ) {
+  
+  @if ( map-has-keys($brandy-config-map, $key) and $overwrite == false ) {
+    
+    @error 'Configuration `#{$key}` already exists and overwriting was not permitted.'
+    
+  }
+  
+  $brandy-config-map: map-deep-set($brandy-config-map, $key, $value) !global;
+  
+}
+
+/// Sets a value in the `$brandy-const-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-set
+/// @requires {function} map-has-keys
+/// @requires {variable} $brandy-const-map
+/// @param {string} $key - A key in the constants map given in dot notation
+/// @param {mixed} $value - Some value
+/// @throws 'Constant `#{$key}` already exists.'
+@mixin const( $key, $value ) {
+  
+  @if ( map-has-keys($brandy-const-map, $key) ) {
+    
+    @error 'Constant `#{$key}` already exists.';
+    
+  }
+  
+  $brandy-const-map: map-deep-set($brandy-const-map, $key, $value) !global;
+  
+}
+
+/// Sets a value in the `$brandy-colors-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-set
+/// @requires {function} map-has-keys
+/// @requires {variable} $brandy-colors-map
+/// @param {string} $key - A key in the colors map given in dot notation
+/// @param {mixed} $value - Some value
+/// @param {boolean} $overwrite [false] - Allows or disallows overwriting of existing properties
+/// @throws 'Color `#{$key}` already exists and overwriting was not permitted.'
+@mixin color( $key, $value, $overwrite: false ) {
+
+  @if ( map-has-keys($brandy-colors-map, $key) and $overwrite == false ) {
+    
+    @error 'Color `#{$key}` already exists and overwriting was not permitted.'
+    
+  }
+
+  $brandy-colors-map: map-deep-set($brandy-colors-map, $key, $value) !global;
+
+}
+
+/// Sets a value in the `$brandy-fonts-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-set
+/// @requires {function} map-has-keys
+/// @requires {variable} $brandy-colors-map
+/// @param {string} $key - A key in the fonts map given in dot notation
+/// @param {mixed} $value - Some value
+/// @param {boolean} $overwrite [false] - Allows or disallows overwriting of existing properties
+/// @throws 'Font `#{$key}` already exists and overwriting was not permitted.'
+@mixin font( $key, $value, $overwrite: false ) {
+  
+  @if ( map-has-keys($brandy-fonts-map, $key) and $overwrite == false ) {
+    
+    @error 'Font `#{$key}` already exists and overwriting was not permitted.'
+    
+  }
+
+  $brandy-fonts-map: map-deep-set($brandy-fonts-map, $key, $value) !global;
+  
+}
+
+/// Sets a value in the `$brandy-screens-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-set
+/// @requires {function} map-has-keys
+/// @requires {variable} $brandy-screens-map
+/// @param {string} $key - A key in the screens map given in dot notation
+/// @param {mixed} $value - Some value
+/// @param {boolean} $overwrite [false] - Allows or disallows overwriting of existing properties
+/// @throws 'Screen `#{$key}` already exists and overwriting was not permitted.'
+@mixin screen( $key, $value, $overwrite: false ) {
+  
+  @if ( map-has-keys($brandy-screens-map, $key) and $overwrite == false ) {
+    
+    @error 'Screen `#{$key}` already exists and overwriting was not permitted.'
+    
+  }
+  
+  $brandy-screens-map: map-deep-set($brandy-screens-map, $key, $value) !global;
+  
+}
+
+/// Sets a value in the `$brandy-z-map`
+///
+/// @requires {function} str-split
+/// @requires {function} map-deep-set
+/// @requires {function} map-has-keys
+/// @requires {variable} $brandy-screens-map
+/// @param {string} $key - A key in the z map given in dot notation
+/// @param {mixed} $value - Some value
+/// @param {boolean} $overwrite [false] - Allows or disallows overwriting of existing properties
+/// @throws 'Z-layer `#{$key}` already exists and overwriting was not permitted.'
+@mixin z( $key, $value, $overwrite: false ) {
+  
+  @if ( map-has-keys($brandy-z-map, $key) and $overwrite == false ) {
+    
+    @error 'Z-layer `#{$key}` already exists and overwriting was not permitted.'
+    
+  }
+  
+  $brandy-z-map: map-deep-set($brandy-z-map, $key, $value) !global;
+  
+}

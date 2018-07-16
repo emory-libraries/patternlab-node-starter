@@ -1,4 +1,6 @@
-/* A compiled library of extensible SASS mixins. */
+////
+/// @group brandy-mixins
+////
 
 @import 'mixins/font';
 @import 'mixins/color';
@@ -6,5 +8,7 @@
 @import 'mixins/selector';
 @import 'mixins/box';
 @import 'mixins/scope';
-@import 'mixins/helpers';
 @import 'mixins/components';
+@import 'mixins/matrix';
+@import 'mixins/sprite';
+@import 'mixins/state';
