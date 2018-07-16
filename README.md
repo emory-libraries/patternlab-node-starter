@@ -1,6 +1,6 @@
 # Pattern Lab Node - Grunt Edition - Starter Kit
 
-This repository stores a custom starter kit for the Grunt edition of Pattern Lab Node. 
+This repository stores a custom starter kit for the Grunt edition of Pattern Lab Node.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ To get started with this starter kit, download or `git clone` this repository to
 ```
 cd <your_install_location>
 npm install
-grunt mode:prod
+grunt dev
 ```
 
 `npm` is a dependency management and package system which can pull in all of the Grunt Edition's dependencies for you. Running `npm install` from the directory containing the `package.json` file will download all dependencies defined within.

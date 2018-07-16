@@ -3,13 +3,13 @@
   "description": "A custom starter kit for the Grunt edition of Pattern Lab Node",
   "version": "1.0.0",
   "main": "./core/lib/patternlab.js",
+  "scripts": {
+    "postinstall": "node node_modules/patternlab-node/core/scripts/postinstall.js"
+  },
   "dependencies": {
     "bs-html-injector": "^3.0.0",
-    "grunt": "~1.0.1",
-    "grunt-browser-sync": "^2.2.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0",
     "minimist": "^1.2.0",
+    "patternengine-node-handlebars": "^1.0.3",
     "patternlab-node": "^2.0.0",
     "styleguidekit-assets-default": "^3.0.0",
     "styleguidekit-mustache-default": "^3.0.0"
@@ -19,7 +19,8 @@
     "Atomic Web Design",
     "Node",
     "Grunt",
-    "Javascript"
+    "Javascript",
+    "Handlebars"
   ],
   "repository": {
     "type": "git",
@@ -27,21 +28,21 @@
   },
   "bugs": "https://github.com/laurenhamel/patternlab-node-starter/issues",
   "author": "Lauren Hamel",
-  "scripts": {
-    "postinstall": "node node_modules/patternlab-node/core/scripts/postinstall.js"
-  },
   "license": "MIT",
   "engines": {
     "node": ">=5.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
+    "grunt": "^1.0.3",
+    "grunt-browser-sync": "^2.2.0",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-cssmin": "^2.2.1",
-    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-dart-sass": "^1.0.0",
     "grunt-includes": "^1.0.0",
     "grunt-postcss": "^0.8.0",
-    "grunt-run": "^0.7.0",
-    "grunt-sass": "^2.0.0",
+    "load-grunt-tasks": "^4.0.0",
     "plugin-node-tab": "^2.0.2"
   }
 }

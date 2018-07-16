@@ -1,24 +1,45 @@
 module.exports = function(grunt) {
 
-  var path = require('path'),
-    argv = require('minimist')(process.argv.slice(2));
+  const path = require('path');
+  const argv = require('minimist')(process.argv.slice(2));
 
-  //Pattern Lab configurations
-  var config = require('./patternlab-config.json'),
-    pl = require('patternlab-node')(config);
+  // Pattern Lab configuration(s)
+  const config = require('./patternlab-config.json');
+  const pl = require('patternlab-node')(config);
 
-  // Helper functions
+  // Helper function(s)
   function paths() {
+
     return config.paths;
+
+  }
+  function getConfiguredCleanOption() {
+
+    return config.cleanPublic;
+
   }
 
-  function getConfiguredCleanOption() {
-    return config.cleanPublic;
+  // Pattern Lab task(s)
+  function patternLabCLI( arg ) {
+
+    if( arguments.length === 0 ) pl.build(function() {}, getConfiguredCleanOption());
+
+    if( arg && arg === 'version' ) pl.version();
+
+    if( arg && arg === "patternsonly" ) pl.patternsonly(function() {}, getConfiguredCleanOption());
+
+    if( arg && arg === "help" ) pl.help();
+
+    if( arg && arg === "liststarterkits" ) pl.liststarterkits();
+
+    if( arg && arg === "loadstarterkit" ) pl.loadstarterkit(argv.kit, argv.clean);
+
+    if( arg && !["version", "patternsonly", "help", "liststarterkits", "loadstarterkits"].include(arg) ) pl.help();
+
   }
 
   // Initialize configurations
   grunt.initConfig({
-
     pkg: grunt.file.readJSON('package.json'),
     copy: {
       init: {
@@ -27,10 +48,11 @@ module.exports = function(grunt) {
           cwd: path.resolve(paths().styleguideDefault),
           src: ['*', '**'],
           dest: path.resolve(paths().public.root)
-        }, ]
+        }]
       },
       patternlab: {
-        files: [{
+        files: [
+          {
             expand: true,
             cwd: path.resolve(paths().source.js),
             src: '**/*.js',
@@ -74,8 +96,9 @@ module.exports = function(grunt) {
           }
         ]
       },
-      build: {
-        files: [{
+      dist: {
+        files: [
+          {
             expand: true,
             cwd: path.resolve(paths().source.js),
             src: '**/*.js',
@@ -102,7 +125,8 @@ module.exports = function(grunt) {
         ]
       },
       ui: {
-        files: [{
+        files: [
+          {
             expand: true,
             cwd: path.resolve(paths().source.styleguide, 'css/'),
             src: ['*', '**'],
@@ -135,7 +159,7 @@ module.exports = function(grunt) {
           path.resolve(paths().source.styleguide + '/**')
         ],
         tasks: [
-          'sass:dev',
+          'dart-sass:dev',
           'cssmin:ui',
           'includes:ui',
           'patternlab',
@@ -161,7 +185,6 @@ module.exports = function(grunt) {
           path.resolve(paths().source.meta + '/**'),
         ],
         tasks: [
-          'run:mustache',
           'patternlab',
           'copy:patternlab',
           'bsReload'
@@ -179,13 +202,11 @@ module.exports = function(grunt) {
       },
       styles: {
         files: [
-          path.resolve(paths().source.css + '/**'),
           path.resolve(paths().source.scss + '/**'),
         ],
         tasks: [
-          'sass:dev',
+          'dart-sass:dev',
           'postcss',
-          'run:mustache',
           'patternlab',
           'copy:patternlab',
           'bsReload'
@@ -207,7 +228,7 @@ module.exports = function(grunt) {
         },
         files: [],
         tasks: [
-          'sass:dev',
+          'dart-sass:dev',
           'postcss',
           'cssmin:ui',
           'includes:ui',
@@ -287,15 +308,15 @@ module.exports = function(grunt) {
         }
       }
     },
-    sass: {
+    'dart-sass': {
       dev: {
         options: {
           noCache: true,
-          update: true,
           style: 'expanded',
-          sourcemap: 'none'
+          sourceMap: 'none'
         },
-        files: [{
+        files: [
+          {
             expand: true,
             cwd: path.resolve(paths().source.scss),
             src: ['style.scss', 'patternlab.scss'],
@@ -311,12 +332,13 @@ module.exports = function(grunt) {
           }
         ]
       },
-      build: {
+      dist: {
         options: {
           noCache: true,
           style: 'compressed'
         },
-        files: [{
+        files: [
+          {
             expand: true,
             cwd: path.resolve(paths().source.scss),
             src: ['style.scss', 'patternlab.scss'],
@@ -361,7 +383,7 @@ module.exports = function(grunt) {
           ext: '.min.css'
         }]
       },
-      build: {
+      dist: {
         options: {
           sourceMap: false
         },
@@ -374,71 +396,21 @@ module.exports = function(grunt) {
         }]
       }
     },
-    run: {
-      mustache: {
-        cmd: 'node',
-        args: [
-          path.resolve(paths().source.js + '/utils/mustache-preprocessor.js'),
-          path.resolve(paths().source.patterns),
-          path.resolve(paths().source.meta)
-        ]
-      }
-    },
     gitTag: {
-        packageFile: 'package.json'
+      packageFile: 'package.json'
     }
   });
 
   // Load tasks
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-browser-sync');
-  grunt.loadNpmTasks('grunt-contrib-sass');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-postcss');
-  grunt.loadNpmTasks('grunt-includes');
-  grunt.loadNpmTasks('grunt-run');
-  grunt.loadNpmTasks('grunt-git-tag');
+  require('load-grunt-tasks')(grunt);
 
   // Register tasks
-  grunt.registerTask('patternlab', 'Create design systems with atomic design', function(arg) {
-
-    if (arguments.length === 0) {
-      pl.build(function() {}, getConfiguredCleanOption());
-    }
-
-    if (arg && arg === 'version') {
-      pl.version();
-    }
-
-    if (arg && arg === "patternsonly") {
-      pl.patternsonly(function() {}, getConfiguredCleanOption());
-    }
-
-    if (arg && arg === "help") {
-      pl.help();
-    }
-
-    if (arg && arg === "liststarterkits") {
-      pl.liststarterkits();
-    }
-
-    if (arg && arg === "loadstarterkit") {
-      pl.loadstarterkit(argv.kit, argv.clean);
-    }
-
-    if (arg && (arg !== "version" && arg !== "patternsonly" && arg !== "help" && arg !== "starterkit-list" && arg !== "starterkit-load")) {
-      pl.help();
-    }
-
-  });
-
+  grunt.registerTask('patternlab', 'Create design systems with atomic design', patternLabCLI);
   grunt.registerTask('default', ['dev']);
   grunt.registerTask('init', [
     'copy:init',
-    'sass:build',
+    'dart-sass:dist',
     'postcss',
-    'run:mustache',
     'includes:ui',
     'patternlab',
     'copy:patternlab',
@@ -448,20 +420,20 @@ module.exports = function(grunt) {
     'browserSync',
     'watch'
   ]);
-  grunt.registerTask('build', [
-    'sass:build',
+  grunt.registerTask('dist', [
+    'dart-sass:dist',
     'postcss',
     'cssmin:ui',
-    'cssmin:build',
-    'run:mustache',
+    'cssmin:dist',
     'includes:ui',
     'patternlab',
     'copy:patternlab',
     'copy:ui',
-    'copy:build'
+    'copy:dist'
   ]);
   grunt.registerTask('release', [
     'build',
     'git-tag'
   ]);
+
 };
