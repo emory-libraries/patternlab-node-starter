@@ -315,7 +315,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: path.resolve(paths().source.js),
-          src: ['**/*.js', '!utils/**/*.js'],
+          src: ['**/*.js'],
           dest: path.resolve(paths().public.js)
         }]
       },
@@ -323,7 +323,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: path.resolve(paths().source.js),
-          src: ['**/*.js', '!utils/**/*.js'],
+          src: ['**/*.js'],
           dest: path.resolve(paths().dist.js)
         }]
       },

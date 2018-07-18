@@ -100,5 +100,5 @@
       }
     }
   },
-  "extensionPath": "./source/js/utils/extensions.js"
+  "extensionPath": "./source/_extensions/extensions.js"
 }
