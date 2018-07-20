@@ -49,8 +49,10 @@
     "grunt-contrib-uglify": "^3.3.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-dart-sass": "^1.0.0",
+    "grunt-git-tag": "0.0.5",
     "grunt-includes": "^1.0.0",
     "grunt-postcss": "^0.8.0",
+    "grunt-ssh-deploy": "^0.4.1",
     "load-grunt-tasks": "^4.0.0",
     "plugin-node-tab": "^2.0.2"
   }

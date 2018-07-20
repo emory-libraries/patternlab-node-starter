@@ -2,10 +2,11 @@
 node_modules/
 .DS_Store
 patternlab.json
-.sass-cache/*
+.sass-cache/
 /sass-cache
 Thumbs.db
 public/
+secret.json
 source/**/css/*.css
 source/css/*.css
 source/**/css/*.css.map
