@@ -420,12 +420,12 @@ module.exports = function(grunt) {
   ]);
   grunt.registerTask('init', [
     'copy:init',
-    'dart-sass:dist',
+    'dart-sass:dev',
     'postcss',
     'includes',
     'patternlab',
-    'babel:dist',
-    'copy:dist',
+    'babel:dev',
+    'copy:dev',
     'copy:ui'
   ]);
   grunt.registerTask('dev', [
