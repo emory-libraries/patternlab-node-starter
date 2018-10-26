@@ -3,9 +3,7 @@
   "description": "A custom starter kit for the Grunt edition of Pattern Lab Node",
   "version": "1.0.0",
   "main": "./core/lib/patternlab.js",
-  "scripts": {
-    "postinstall": "node node_modules/patternlab-node/core/scripts/postinstall.js"
-  },
+  "scripts": {},
   "dependencies": {
     "bs-html-injector": "^3.0.0",
     "extend": "^3.0.1",
@@ -30,7 +28,9 @@
     "type": "git",
     "url": "git://github.com/laurenhamel/patternlab-node-starter.git"
   },
-  "bugs": "https://github.com/laurenhamel/patternlab-node-starter/issues",
+  "bugs": {
+    "url": "https://github.com/laurenhamel/patternlab-node-starter/issues"
+  },
   "author": "Lauren Hamel",
   "license": "MIT",
   "engines": {
@@ -50,10 +50,10 @@
     "grunt-contrib-watch": "^1.1.0",
     "grunt-dart-sass": "^1.0.0",
     "grunt-git-tag": "0.0.5",
-    "grunt-includes": "^1.0.0",
     "grunt-postcss": "^0.8.0",
     "grunt-ssh-deploy": "^0.4.1",
     "load-grunt-tasks": "^4.0.0",
     "plugin-node-tab": "^2.0.2"
-  }
+  },
+  "homepage": "https://github.com/laurenhamel/patternlab-node-starter#readme"
 }
