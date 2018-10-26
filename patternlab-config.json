@@ -84,6 +84,15 @@
     "reconsideration",
     "deprecated"
   ],
+  "uikits": [
+    {
+      "name": "uikit-workshop",
+      "outputDir": "",
+      "enabled": true,
+      "excludedPatternStates": ["review"],
+      "excludedTags": []
+    }
+  ],
   "patternExportPatternPartials": [],
   "patternExportDirectory": "./pattern_exports/",
   "baseurl": "",
