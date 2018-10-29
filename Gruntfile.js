@@ -34,7 +34,7 @@ module.exports = function(grunt) {
 
     if( arg && arg === "loadstarterkit" ) pl.loadstarterkit(argv.kit, argv.clean);
 
-    if( arg && !["version", "patternsonly", "help", "liststarterkits", "loadstarterkits"].include(arg) ) pl.help();
+    if( arg && !["version", "patternsonly", "help", "liststarterkits", "loadstarterkits"].includes(arg) ) pl.help();
 
   }
 
