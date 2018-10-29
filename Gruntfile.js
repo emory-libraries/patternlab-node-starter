@@ -42,14 +42,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     copy: {
-      init: {
-        files: [{
-          expand: true,
-          cwd: path.resolve(paths().styleguideDefault),
-          src: ['*', '**'],
-          dest: path.resolve(paths().public.root)
-        }]
-      },
       dev: {
         files: [
           {
@@ -93,41 +85,9 @@ module.exports = function(grunt) {
             dest: path.resolve(paths().dist.root)
           }
         ]
-      },
-      ui: {
-        files: [
-          {
-            expand: true,
-            cwd: path.resolve(paths().source.styleguide, 'images/'),
-            src: ['*', '**'],
-            dest: path.resolve(paths().public.styleguide, 'images/')
-          },
-          {
-            expand: true,
-            cwd: path.resolve(paths().source.styleguide, 'fonts/'),
-            src: ['*', '**'],
-            dest: path.resolve(paths().public.styleguide, 'fonts/')
-          }
-        ]
       }
     },
     watch: {
-      ui: {
-        files: [
-          path.resolve(paths().source.styleguide + '/**')
-        ],
-        tasks: [
-          'dart-sass:ui',
-          'postcss:ui',
-          'cssmin:ui',
-          'includes:ui',
-          'jshint:ui',
-          'babel:ui',
-          'patternlab',
-          'copy:ui',
-          'bsReload'
-        ]
-      },
       assets: {
         files: [
           path.resolve(paths().source.fonts + '/**'),
@@ -240,20 +200,6 @@ module.exports = function(grunt) {
       css: path.resolve(paths().public.root + '**/*.css'),
       js: path.resolve(paths().public.root + '**/*.js')
     },
-    includes: {
-      ui: {
-        html: {
-          options: {
-            includePath: path.resolve(paths().source.styleguide, 'html/partials/')
-          },
-          files: [{
-            cwd: path.resolve(paths().source.styleguide, 'html/'),
-            src: 'index.html',
-            dest: path.resolve(paths().source.styleguide)
-          }]
-        }
-      }
-    },
     'dart-sass': {
       dev: {
         options: {
@@ -279,21 +225,6 @@ module.exports = function(grunt) {
           dest: path.resolve(paths().dist.css),
           ext: '.css'
         }]
-      },
-      ui: {
-        options: {
-          sourceMap: false,
-          style: 'expanded'
-        },
-        files: [
-          {
-            expand: true,
-            cwd: path.resolve(paths().source.styleguide, 'scss/'),
-            src: ['styleguide.scss'],
-            dest: path.resolve(paths().public.styleguide, 'css/'),
-            ext: '.css'
-          }
-        ]
       }
     },
     jshint: {
@@ -302,9 +233,6 @@ module.exports = function(grunt) {
       },
       dev: [
         path.resolve(paths().source.js, '*.js')
-      ],
-      ui: [
-        path.resolve(paths().source.styleguide, 'js/*.js')
       ]
     },
     babel: {
@@ -325,14 +253,6 @@ module.exports = function(grunt) {
           cwd: path.resolve(paths().source.js),
           src: ['**/*.js'],
           dest: path.resolve(paths().dist.js)
-        }]
-      },
-      ui: {
-        files: [{
-          expand: true,
-          cwd: path.resolve(paths().source.styleguide, 'js/'),
-          src: ['**/*.js'],
-          dest: path.resolve(paths().public.styleguide, 'js/')
         }]
       }
     },
@@ -360,24 +280,9 @@ module.exports = function(grunt) {
       },
       dist: {
         src: path.resolve(paths().dist.css, '**/*.css')
-      },
-      ui: {
-        src: path.resolve(paths().public.styleguide, 'css/**/*.css')
       }
     },
     cssmin: {
-      ui: {
-        options: {
-          sourceMap: false
-        },
-        files: [{
-          expand: true,
-          cwd: path.resolve(paths().source.styleguide, 'css/'),
-          src: ['*.css', '!*.min.css'],
-          dest: path.resolve(paths().public.styleguide, 'css/'),
-          ext: '.min.css'
-        }]
-      },
       dist: {
         options: {
           sourceMap: false
@@ -407,26 +312,9 @@ module.exports = function(grunt) {
     'postcss:dev',
     'jshint:dev',
     'babel:dev',
-    'dart-sass:ui',
-    'postcss:ui',
-    'cssmin:ui',
-    'includes:ui',
-    'jshint:ui',
-    'babel:ui',
     'patternlab',
     'copy:dev',
-    'copy:ui',
     'bsReload'
-  ]);
-  grunt.registerTask('init', [
-    'copy:init',
-    'dart-sass:dev',
-    'postcss',
-    'includes',
-    'patternlab',
-    'babel:dev',
-    'copy:dev',
-    'copy:ui'
   ]);
   grunt.registerTask('dev', [
     'browserSync',
@@ -436,7 +324,6 @@ module.exports = function(grunt) {
     'dart-sass:dist',
     'postcss',
     'cssmin',
-    'includes',
     'patternlab',
     'babel:dist',
     'uglify:dist',
