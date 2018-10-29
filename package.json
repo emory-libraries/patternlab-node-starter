@@ -10,7 +10,6 @@
     "handlebars-helper-md": "^0.2.0",
     "handlebars-helpers": "^0.10.0",
     "minimist": "^1.2.0",
-    "patternengine-node-handlebars": "^1.0.3",
     "patternlab-node": "^2.0.0",
     "plugin-node-engine-extender": "^1.0.5",
     "styleguidekit-assets-default": "^3.0.0",
@@ -53,6 +52,7 @@
     "grunt-postcss": "^0.8.0",
     "grunt-ssh-deploy": "^0.4.1",
     "load-grunt-tasks": "^4.0.0",
+    "patternengine-node-handlebars": "^1.0.3",
     "plugin-node-tab": "^2.0.2"
   },
   "homepage": "https://github.com/laurenhamel/patternlab-node-starter#readme"
