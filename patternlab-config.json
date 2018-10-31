@@ -21,18 +21,9 @@
     "tools-docs": false
   },
   "ishViewportRange": {
-    "s": [
-      240,
-      500
-    ],
-    "m": [
-      500,
-      800
-    ],
-    "l": [
-      800,
-      2600
-    ]
+    "s": [240, 500],
+    "m": [500, 800],
+    "l": [800, 2600]
   },
   "logLevel": "info",
   "outputFileSuffixes": {
@@ -58,7 +49,8 @@
       "js": "src/js",
       "images": "src/images",
       "fonts": "src/fonts",
-      "css": "src/css"
+      "css": "src/css/",
+      "scss": "src/scss/"
     },
     "public": {
       "root": "public/",
@@ -66,17 +58,29 @@
       "data": "public/styleguide/data/",
       "annotations": "public/annotations/",
       "styleguide": "public/styleguide/",
-      "js": "public/js",
-      "images": "public/images",
-      "fonts": "public/fonts",
-      "css": "public/css"
+      "js": "public/js/",
+      "images": "public/images/",
+      "fonts": "public/fonts/",
+      "css": "public/css/",
+      "scss": "public/scss/"
+    },
+    "dist": {
+      "root": "dist/",
+      "js": "dist/<%= pkg.version %>/js/",
+      "images": "dist/<%= pkg.version %>/images/",
+      "fonts": "dist/<%= pkg.version %>/fonts/",
+      "css": "dist/<%= pkg.version %>/css/",
+      "scss": "dist/<%= pkg.version %>/scss/"
     }
   },
-  "patternExtension": "mustache",
+  "patternExtension": "handlebars",
   "patternStateCascade": [
-    "inprogress",
-    "inreview",
-    "complete"
+    "specification",
+    "construction",
+    "review",
+    "complete",
+    "reconsideration",
+    "deprecated"
   ],
   "patternExportDirectory": "pattern_exports",
   "patternExportPatternPartials": [],
@@ -93,7 +97,14 @@
   "uikits": [
     {
       "name": "uikit-workshop",
-      "outputDir": "",
+      "outputDir": "pattern-library",
+      "enabled": true,
+      "excludedPatternStates": [],
+      "excludedTags": []
+    },
+    {
+      "name": "uikit-bare",
+      "outputDir": "style-guide",
       "enabled": true,
       "excludedPatternStates": [],
       "excludedTags": []

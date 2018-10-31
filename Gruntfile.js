@@ -6,9 +6,8 @@ module.exports = function(grunt) {
   // Pattern Lab configuration(s)
   const config = require('./patternlab-config.json');
   const patternlab = require('@pattern-lab/core')(config);
-
-  // Helper function(s)
-  const paths = () => config.paths;
+  const pkg = grunt.config.init({pkg: grunt.file.readJSON('package.json')});
+  const paths = grunt.config.process(config.paths);
 
   // Define a list of files to ignore during `uglify`.
   // Paths are relative to the `dist/js/` folder.
@@ -17,28 +16,27 @@ module.exports = function(grunt) {
   ];
 
   // Initialize configurations
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+  grunt.config.merge({
     copy: {
       dev: {
         files: [
           {
             expand: true,
-            cwd: path.resolve(paths().source.images),
+            cwd: path.resolve(paths.source.images),
             src: '**/*',
-            dest: path.resolve(paths().public.images)
+            dest: path.resolve(paths.public.images)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.fonts),
+            cwd: path.resolve(paths.source.fonts),
             src: '**/*',
-            dest: path.resolve(paths().public.fonts)
+            dest: path.resolve(paths.public.fonts)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.root),
+            cwd: path.resolve(paths.source.root),
             src: 'favicon.ico',
-            dest: path.resolve(paths().public.root)
+            dest: path.resolve(paths.public.root)
           }
         ]
       },
@@ -46,21 +44,21 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: path.resolve(paths().source.images),
+            cwd: path.resolve(paths.source.images),
             src: '**/*',
-            dest: path.resolve(paths().dist.images)
+            dest: path.resolve(paths.dist.images)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.fonts),
+            cwd: path.resolve(paths.source.fonts),
             src: '**/*',
-            dest: path.resolve(paths().dist.fonts)
+            dest: path.resolve(paths.dist.fonts)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.root),
+            cwd: path.resolve(paths.source.root),
             src: 'favicon.ico',
-            dest: path.resolve(paths().dist.root)
+            dest: path.resolve(paths.dist.root)
           }
         ]
       }
@@ -68,8 +66,8 @@ module.exports = function(grunt) {
     watch: {
       assets: {
         files: [
-          path.resolve(paths().source.fonts + '/**'),
-          path.resolve(paths().source.images + '/**'),
+          path.resolve(paths.source.fonts + '/**'),
+          path.resolve(paths.source.images + '/**'),
         ],
         tasks: [
           'patternlab',
@@ -79,9 +77,9 @@ module.exports = function(grunt) {
       },
       patterns: {
         files: [
-          path.resolve(paths().source.patterns + '/**'),
-          path.resolve(paths().source.data + '/**'),
-          path.resolve(paths().source.meta + '/**'),
+          path.resolve(paths.source.patterns + '/**'),
+          path.resolve(paths.source.data + '/**'),
+          path.resolve(paths.source.meta + '/**'),
         ],
         tasks: [
           'patternlab',
@@ -94,18 +92,18 @@ module.exports = function(grunt) {
           reload: true
         },
         files: [
-          path.resolve(paths().source.root + '/*.ico'),
-          path.resolve(paths().root + '/Gruntfile.js'),
-          path.resolve(paths().root + '/patternlab-config.json'),
-          path.resolve(paths().root + '.eslintrc'),
-          path.resolve(paths().root + '.babelrc'),
-          path.resolve(paths().root + '.jshintrc')
+          path.resolve(paths.source.root + '/*.ico'),
+          path.resolve(paths.root + '/Gruntfile.js'),
+          path.resolve(paths.root + '/patternlab-config.json'),
+          path.resolve(paths.root + '.eslintrc'),
+          path.resolve(paths.root + '.babelrc'),
+          path.resolve(paths.root + '.jshintrc')
         ],
         tasks: ['prewatch']
       },
       scss: {
         files: [
-          path.resolve(paths().source.scss + '/**'),
+          path.resolve(paths.source.scss + '/**'),
         ],
         tasks: [
           'dart-sass:dev',
@@ -116,7 +114,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: [
-          path.resolve(paths().source.js + '/**'),
+          path.resolve(paths.source.js + '/**'),
         ],
         tasks: [
           'jshint:dev',
@@ -137,7 +135,7 @@ module.exports = function(grunt) {
       dev: {
         options: {
           open: false,
-          server: path.resolve(paths().public.root),
+          server: path.resolve(paths.public.root),
           watchTask: true,
           watchOptions: {
             ignoreInitial: true,
@@ -150,7 +148,7 @@ module.exports = function(grunt) {
           plugins: [{
             module: 'bs-html-injector',
             options: {
-              files: [path.resolve(paths().public.root + '/index.html'), path.resolve(paths().public.styleguide + '/styleguide.html')]
+              files: [path.resolve(paths.public.root + '/index.html'), path.resolve(paths.public.styleguide + '/styleguide.html')]
             }
           }],
           notify: {
@@ -175,8 +173,8 @@ module.exports = function(grunt) {
       }
     },
     bsReload: {
-      css: path.resolve(paths().public.root + '**/*.css'),
-      js: path.resolve(paths().public.root + '**/*.js')
+      css: path.resolve(paths.public.root + '**/*.css'),
+      js: path.resolve(paths.public.root + '**/*.js')
     },
     'dart-sass': {
       dev: {
@@ -186,9 +184,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.scss),
+          cwd: path.resolve(paths.source.scss),
           src: ['*.scss'],
-          dest: path.resolve(paths().public.css),
+          dest: path.resolve(paths.public.css),
           ext: '.css'
         }]
       },
@@ -198,9 +196,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.scss),
+          cwd: path.resolve(paths.source.scss),
           src: ['*.scss'],
-          dest: path.resolve(paths().dist.css),
+          dest: path.resolve(paths.dist.css),
           ext: '.css'
         }]
       }
@@ -210,7 +208,7 @@ module.exports = function(grunt) {
         jshintrc: true
       },
       dev: [
-        path.resolve(paths().source.js, '*.js')
+        path.resolve(paths.source.js, '*.js')
       ]
     },
     babel: {
@@ -220,17 +218,17 @@ module.exports = function(grunt) {
       dev: {
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.js),
+          cwd: path.resolve(paths.source.js),
           src: ['**/*.js'],
-          dest: path.resolve(paths().public.js)
+          dest: path.resolve(paths.public.js)
         }]
       },
       dist: {
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.js),
+          cwd: path.resolve(paths.source.js),
           src: ['**/*.js'],
-          dest: path.resolve(paths().dist.js)
+          dest: path.resolve(paths.dist.js)
         }]
       }
     },
@@ -238,9 +236,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: path.resolve(paths().dist.js),
+          cwd: path.resolve(paths.dist.js),
           src: ['**/*.js', '!**/*.min.js', ...noUglify.map((val) => `!${val}`)],
-          dest: path.resolve(paths().dist.js),
+          dest: path.resolve(paths.dist.js),
           ext: '.min.js'
         }]
       }
@@ -254,10 +252,10 @@ module.exports = function(grunt) {
         ]
       },
       dev: {
-        src: path.resolve(paths().public.css, '**/*.css')
+        src: path.resolve(paths.public.css, '**/*.css')
       },
       dist: {
-        src: path.resolve(paths().dist.css, '**/*.css')
+        src: path.resolve(paths.dist.css, '**/*.css')
       }
     },
     cssmin: {
@@ -267,9 +265,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.css),
+          cwd: path.resolve(paths.source.css),
           src: ['*.css', '!*.min.css'],
-          dest: path.resolve(paths().dist.css),
+          dest: path.resolve(paths.dist.css),
           ext: '.min.css'
         }]
       }
@@ -284,11 +282,11 @@ module.exports = function(grunt) {
       },
       dev: {
         pkg: 'package.json',
-        dest: path.resolve(paths().public.js, 'dependencies/')
+        dest: path.resolve(paths.public.js, 'dependencies/')
       },
       dist: {
         pkg: 'package.json',
-        dest: path.resolve(paths().dist.js, 'dependencies/')
+        dest: path.resolve(paths.dist.js, 'dependencies/')
       }
     }
   });
