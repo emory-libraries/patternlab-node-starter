@@ -297,21 +297,23 @@ module.exports = function(grunt) {
   // Register tasks
   grunt.registerTask('patternlab', 'Create design systems with atomic design', function(arg) {
 
+    const done = this.async();
+
     switch(arg) {
 
-      case 'build': patternlab.build({watch: argv.watch, cleanPublic: patternlab.cleanPublic}); break;
+      case 'build': return patternlab.build({watch: argv.watch, cleanPublic: patternlab.cleanPublic}).then(() => done());
 
-      case 'serve': patternlab.server.serve({cleanPublic: patternlab.cleanPublic}); break;
+      case 'serve': return patternlab.server.serve({cleanPublic: patternlab.cleanPublic}).then(() => done());
 
-      case 'version': console.log(patternlab.version()); break;
+      case 'version': console.log(patternlab.version()); return done();
 
-      case 'patternsonly': patternlab.patternsonly(patternlab.cleanPublic); break;
+      case 'patternsonly': patternlab.patternsonly(patternlab.cleanPublic); return done();
 
-      case 'liststarterkits': patternlab.liststarterkits(); break;
+      case 'liststarterkits': patternlab.liststarterkits(); return done();
 
-      case 'installplugin': patternlab.installplugin(argv.plugin); break;
+      case 'installplugin': patternlab.installplugin(argv.plugin); return done();
 
-      case 'loadstarterkit': patternlab.loadstarterkit(argv.kit, argv.clean); break;
+      case 'loadstarterkit': patternlab.loadstarterkit(argv.kit, argv.clean); return done();
 
     }
 

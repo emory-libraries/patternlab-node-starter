@@ -1,1 +1,1 @@
-{"version":1,"timestamp":1541018863807,"graph":{"options":{"directed":true,"multigraph":false,"compound":false},"nodes":[{"v":"test.handlebars","value":{"compileState":"clean"}}],"edges":[]}}
+{"version":1,"timestamp":1541019602712,"graph":{"options":{"directed":true,"multigraph":false,"compound":false},"nodes":[{"v":"test.handlebars","value":{"compileState":"clean"}}],"edges":[]}}
