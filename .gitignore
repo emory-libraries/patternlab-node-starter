@@ -10,3 +10,5 @@ secret.json
 source/**/*.css
 source/**/*.css.map
 dist/
+pattern-library/
+style-guide/

@@ -5,38 +5,10 @@ module.exports = function(grunt) {
 
   // Pattern Lab configuration(s)
   const config = require('./patternlab-config.json');
-  const pl = require('patternlab-node')(config);
+  const patternlab = require('@pattern-lab/core')(config);
 
   // Helper function(s)
-  function paths() {
-
-    return config.paths;
-
-  }
-  function getConfiguredCleanOption() {
-
-    return config.cleanPublic;
-
-  }
-
-  // Pattern Lab task(s)
-  function patternLabCLI( arg ) {
-
-    if( arguments.length === 0 ) pl.build(function() {}, getConfiguredCleanOption());
-
-    if( arg && arg === 'version' ) pl.version();
-
-    if( arg && arg === "patternsonly" ) pl.patternsonly(function() {}, getConfiguredCleanOption());
-
-    if( arg && arg === "help" ) pl.help();
-
-    if( arg && arg === "liststarterkits" ) pl.liststarterkits();
-
-    if( arg && arg === "loadstarterkit" ) pl.loadstarterkit(argv.kit, argv.clean);
-
-    if( arg && !["version", "patternsonly", "help", "liststarterkits", "loadstarterkits"].includes(arg) ) pl.help();
-
-  }
+  const paths = () => config.paths;
 
   // Initialize configurations
   grunt.initConfig({
@@ -305,14 +277,34 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   // Register tasks
-  grunt.registerTask('patternlab', 'Create design systems with atomic design', patternLabCLI);
+  grunt.registerTask('patternlab', 'Create design systems with atomic design', function() {
+
+    switch( this.args[0] ) {
+
+      case 'build': patternlab.build({ watch: argv.watch, cleanPublic: patternlab.cleanPublic}); break;
+
+      case 'serve': patternlab.server.serve({cleanPublic: patternlab.cleanPublic}); break;
+
+      case 'version': console.log(patternlab.version()); break;
+
+      case 'patternsonly': patternlab.patternsonly(patternlab.cleanPublic); break;
+
+      case 'liststarterkits': patternlab.liststarterkits(); break;
+
+      case 'installplugin': patternlab.installplugin(argv.plugin); break;
+
+      case 'loadstarterkit': patternlab.loadstarterkit(argv.kit, argv.clean); break;
+
+    }
+
+  });
   grunt.registerTask('default', ['dev']);
   grunt.registerTask('prewatch', [
     'dart-sass:dev',
     'postcss:dev',
     'jshint:dev',
     'babel:dev',
-    'patternlab',
+    'patternlab:build',
     'copy:dev',
     'bsReload'
   ]);
@@ -324,7 +316,7 @@ module.exports = function(grunt) {
     'dart-sass:dist',
     'postcss',
     'cssmin',
-    'patternlab',
+    'patternlab:build',
     'babel:dist',
     'uglify:dist',
     'copy:dist'

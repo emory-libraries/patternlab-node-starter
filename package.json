@@ -10,10 +10,7 @@
     "handlebars-helper-md": "^0.2.0",
     "handlebars-helpers": "^0.10.0",
     "minimist": "^1.2.0",
-    "patternlab-node": "^2.0.0",
-    "plugin-node-engine-extender": "^1.0.5",
-    "styleguidekit-assets-default": "^3.0.0",
-    "styleguidekit-mustache-default": "^3.0.0"
+    "plugin-node-engine-extender": "^1.0.5"
   },
   "keywords": [
     "Pattern Lab",
@@ -36,6 +33,11 @@
     "node": ">=5.0"
   },
   "devDependencies": {
+    "@pattern-lab/cli": "0.0.1-beta.1",
+    "@pattern-lab/core": "^3.0.0-beta.1",
+    "@pattern-lab/engine-handlebars": "^2.0.0-beta.0",
+    "@pattern-lab/plugin-tab": "^2.0.3-beta.0",
+    "@pattern-lab/uikit-workshop": "^1.0.0-beta.0",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
@@ -52,8 +54,7 @@
     "grunt-postcss": "^0.8.0",
     "grunt-ssh-deploy": "^0.4.1",
     "load-grunt-tasks": "^4.0.0",
-    "patternengine-node-handlebars": "^1.0.3",
-    "plugin-node-tab": "^2.0.2"
+    "plugin-node-clipboard": "^1.0.0"
   },
   "homepage": "https://github.com/laurenhamel/patternlab-node-starter#readme"
 }
