@@ -303,7 +303,7 @@ module.exports = function(grunt) {
 
       case 'build': return patternlab.build({watch: argv.watch, cleanPublic: patternlab.cleanPublic}).then(() => done());
 
-      case 'serve': return patternlab.server.serve({cleanPublic: patternlab.cleanPublic}).then(() => done());
+      case 'serve': return patternlab.server.serve({cleanPublic: patternlab.cleanPublic});
 
       case 'version': console.log(patternlab.version()); return done();
 

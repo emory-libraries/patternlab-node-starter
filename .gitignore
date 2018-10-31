@@ -12,3 +12,4 @@ source/**/*.css.map
 dist/
 pattern-library/
 style-guide/
+dependencyGraph.json
