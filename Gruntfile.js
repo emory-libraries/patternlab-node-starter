@@ -295,11 +295,11 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   // Register tasks
-  grunt.registerTask('patternlab', 'Create design systems with atomic design', function() {
+  grunt.registerTask('patternlab', 'Create design systems with atomic design', function(arg) {
 
-    switch( this.args[0] ) {
+    switch(arg) {
 
-      case 'build': patternlab.build({ watch: argv.watch, cleanPublic: patternlab.cleanPublic}); break;
+      case 'build': patternlab.build({watch: argv.watch, cleanPublic: patternlab.cleanPublic}); break;
 
       case 'serve': patternlab.server.serve({cleanPublic: patternlab.cleanPublic}); break;
 
