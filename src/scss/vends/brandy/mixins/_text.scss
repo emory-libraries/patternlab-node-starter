@@ -1,0 +1,56 @@
+////
+/// @group brandy-text
+////
+
+/// Creates a long text shadow effect.
+///
+/// @param {color} $color - The desired color of the shadow
+/// @param {number} $offset [2px] - The distance the shadow should be offset from the text, includes both `x` and `y`
+/// @param {number} $distance [50] - The total distance of the long shadow effect
+@mixin long-text-shadow( $color, $offset: 2px, $distance: 50 ) {
+  
+  // Initialize the shadow.
+  $shadow: ();
+  
+  // Build the shadow.
+  @for $i from 1 through $distance {
+    
+    // Save the shadow step.
+    $shadow: append($shadow, ($offset * $i) ($offset * $i) $color, comma);
+    
+  }
+  
+  // Set the shadow.
+  text-shadow: $shadow;
+  
+}
+
+/// Creates a long, fading text shadow effect.
+///
+/// @param {color} $color - The desired color of the shadow
+/// @param {number} $offset [2px] - The distance the shadow should be offset from the text, includes both `x` and `y`
+/// @param {number} $distance [50] - The total distance of the long shadow effect
+@mixin long-fading-text-shadow( $color, $offset: 2px, $distance: 50 ) {
+  
+  // Initialize the shadow.
+  $shadow: ();
+  
+  // Set alpha.
+  $alpha: 1;
+  $step: $alpha / $distance;
+  
+  // Build the shadow.
+  @for $i from 1 through $distance {
+    
+    // Save the shadow step.
+    $shadow: append($shadow, ($offset * $i) ($offset * $i) rgba($color, $alpha), comma);
+    
+    // Decrease the alpha.
+    $alpha: $alpha - $step;
+    
+  }
+  
+  // Set the shadow.
+  text-shadow: $shadow;
+  
+}

@@ -3,7 +3,7 @@
   "cleanPublic": true,
   "defaultPattern": "all",
   "defaultShowPatternInfo": false,
-   "ishControlsHide": {
+  "ishControlsHide": {
     "s": false,
     "m": false,
     "l": false,
@@ -21,24 +21,32 @@
     "tools-docs": false
   },
   "ishViewportRange": {
-    "s": [240, 500],
-    "m": [500, 800],
-    "l": [800, 2600]
+    "s": [
+      240,
+      500
+    ],
+    "m": [
+      500,
+      800
+    ],
+    "l": [
+      800,
+      2600
+    ]
   },
   "logLevel": "info",
   "outputFileSuffixes": {
-    "rendered": "",
+    "rendered": ".rendered",
     "rawTemplate": "",
     "markupOnly": ".markup-only"
   },
   "paths": {
-    "root": "./",
     "source": {
-      "root": "src/",
-      "patterns": "src/_patterns/",
-      "data": "src/_data/",
-      "meta": "src/_meta/",
-      "annotations": "src/_annotations/",
+      "root": "source/",
+      "patterns": "source/_patterns/",
+      "data": "source/_data/",
+      "meta": "source/_meta/",
+      "annotations": "source/_annotations/",
       "styleguide": "dist/",
       "patternlabFiles": {
         "general-header": "views/partials/general-header.mustache",
@@ -47,11 +55,10 @@
         "patternSectionSubtype": "views/partials/patternSectionSubtype.mustache",
         "viewall": "views/viewall.mustache"
       },
-      "js": "src/js",
-      "images": "src/images",
-      "fonts": "src/fonts",
-      "css": "src/css/",
-      "scss": "src/scss/"
+      "js": "source/js",
+      "images": "source/images",
+      "fonts": "source/fonts",
+      "css": "source/css"
     },
     "public": {
       "root": "public/",
@@ -59,31 +66,20 @@
       "data": "public/styleguide/data/",
       "annotations": "public/annotations/",
       "styleguide": "public/styleguide/",
-      "js": "public/js/",
-      "images": "public/images/",
-      "fonts": "public/fonts/",
-      "css": "public/css/",
-      "scss": "public/scss/"
-    },
-    "dist": {
-      "root": "dist/",
-      "js": "dist/<%= pkg.version %>/js/",
-      "images": "dist/<%= pkg.version %>/images/",
-      "fonts": "dist/<%= pkg.version %>/fonts/",
-      "css": "dist/<%= pkg.version %>/css/",
-      "scss": "dist/<%= pkg.version %>/scss/"
+      "js": "public/js",
+      "images": "public/images",
+      "fonts": "public/fonts",
+      "css": "public/css"
     }
   },
-  "patternExtension": "handlebars",
+  "patternExtension": "mustache",
   "patternStateCascade": [
-    "specification",
-    "construction",
-    "review",
-    "complete",
-    "reconsideration",
-    "deprecated"
+    "inprogress",
+    "inreview",
+    "complete"
   ],
-  "patternExportDirectory": "./pattern_exports/",
+  "patternExportDirectory": "pattern_exports",
+  "patternExportPatternPartials": [],
   "serverOptions": {
     "wait": 1000
   },
@@ -97,36 +93,10 @@
   "uikits": [
     {
       "name": "uikit-workshop",
-      "outputDir": "pattern-library",
+      "outputDir": "",
       "enabled": true,
       "excludedPatternStates": [],
       "excludedTags": []
-    },
-    {
-      "name": "uikit-storefront",
-      "outputDir": "style-guide",
-      "enabled": true,
-      "excludedPatternStats": [],
-      "excludedTags": []
     }
-  ],
-  "plugins": {
-    "pattern-lab-plugin-tab": {
-      "enabled": true,
-      "initialized": false,
-      "options": {
-        "tabsToAdd": ["scss", "js"]
-      }
-    },
-    "plugin-node-clipboard": {
-      "enabled": true,
-      "initialized": false
-    }
-  },
-  "engines": {
-    "handlebars": {
-      "helpers": ["helpers/**/*.js"]
-    }
-  },
-  "extensionPath": "./source/_extensions/extensions.js"
+  ]
 }

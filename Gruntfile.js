@@ -10,6 +10,12 @@ module.exports = function(grunt) {
   // Helper function(s)
   const paths = () => config.paths;
 
+  // Define a list of files to ignore during `uglify`.
+  // Paths are relative to the `dist/js/` folder.
+  const noUglify = [
+    // 'dependencies/foo/foo.js'
+  ];
+
   // Initialize configurations
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -233,7 +239,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: path.resolve(paths().dist.js),
-          src: ['**/*.js', '!**/*.min.js'],
+          src: ['**/*.js', '!**/*.min.js', ...noUglify.map((val) => `!${val}`)],
           dest: path.resolve(paths().dist.js),
           ext: '.min.js'
         }]
@@ -270,6 +276,20 @@ module.exports = function(grunt) {
     },
     gitTag: {
       packageFile: 'package.json'
+    },
+    copydeps: {
+      options: {
+        unminified: true,
+        minified: true
+      },
+      dev: {
+        pkg: 'package.json',
+        dest: path.resolve(paths().public.js, 'dependencies/')
+      },
+      dist: {
+        pkg: 'package.json',
+        dest: path.resolve(paths().dist.js, 'dependencies/')
+      }
     }
   });
 
@@ -304,6 +324,7 @@ module.exports = function(grunt) {
     'postcss:dev',
     'jshint:dev',
     'babel:dev',
+    'copydeps:dev',
     'patternlab:build',
     'copy:dev',
     'bsReload'
@@ -318,6 +339,7 @@ module.exports = function(grunt) {
     'cssmin',
     'patternlab:build',
     'babel:dist',
+    'copydeps:dist',
     'uglify:dist',
     'copy:dist'
   ]);
