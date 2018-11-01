@@ -43,7 +43,9 @@
   "defaultPattern": "all",
   "cleanPublic": true,
   "patternExtension": "handlebars",
-  "ignored-extensions": ["DS_Store"],
+  "ignored-extensions": [
+    "DS_Store"
+  ],
   "ignored-directories": [],
   "debug": false,
   "ishControlsHide": {
