@@ -1,39 +1,39 @@
 {
   "paths": {
     "root": "./",
-    "styleguideDefault": "./node_modules/styleguidekit-assets-default/dist/",
+    "styleguideDefault": "node_modules/styleguidekit-assets-default/dist/",
     "source": {
-      "root": "./source/",
-      "patterns": "./source/_patterns/",
-      "data": "./source/_data/",
-      "meta": "./source/_meta/",
-      "annotations": "./source/_annotations/",
-      "styleguide": "./source/styleguide/",
-      "patternlabFiles": "./node_modules/styleguidekit-mustache-default/views/",
-      "js": "./source/js",
-      "images": "./source/images",
-      "fonts": "./source/fonts",
-      "css": "./source/css/",
-      "scss": "./source/scss/"
+      "root": "src/",
+      "patterns": "src/_patterns/",
+      "data": "src/_data/",
+      "meta": "src/_meta/",
+      "annotations": "src/_annotations/",
+      "styleguide": "src/styleguide/",
+      "patternlabFiles": "node_modules/styleguidekit-mustache-default/views/",
+      "js": "src/js",
+      "images": "src/images",
+      "fonts": "src/fonts",
+      "css": "src/css/",
+      "scss": "src/scss/"
     },
     "public": {
-      "root": "./public/",
-      "patterns": "./public/patterns/",
-      "data": "./public/styleguide/data/",
-      "annotations": "./public/annotations/",
-      "styleguide": "./public/styleguide/",
-      "js": "./public/js/",
-      "images": "./public/images/",
-      "fonts": "./public/fonts/",
-      "css": "./public/css/",
-      "scss": "./public/scss/"
+      "root": "public/",
+      "patterns": "public/patterns/",
+      "data": "public/styleguide/data/",
+      "annotations": "public/annotations/",
+      "styleguide": "public/styleguide/",
+      "js": "public/js/",
+      "images": "public/images/",
+      "fonts": "public/fonts/",
+      "css": "public/css/",
+      "scss": "public/scss/"
     },
     "dist": {
-      "root": "./dist/",
-      "js": "./dist/<%= pkg.version %>/js/",
-      "images": "./dist/<%= pkg.version %>/images/",
-      "fonts": "./dist/<%= pkg.version %>/fonts/",
-      "css": "./dist/<%= pkg.version %>/css/"
+      "root": "dist/",
+      "js": "dist/<%= pkg.version %>/js/",
+      "images": "dist/<%= pkg.version %>/images/",
+      "fonts": "dist/<%= pkg.version %>/fonts/",
+      "css": "dist/<%= pkg.version %>/css/"
     }
   },
   "styleGuideExcludes": [
@@ -42,15 +42,9 @@
   ],
   "defaultPattern": "all",
   "cleanPublic": true,
-  "patternExtension": "mustache",
-  "ignored-extensions": [
-    "scss",
-    "DS_Store",
-    "less"
-  ],
-  "ignored-directories": [
-    "scss"
-  ],
+  "patternExtension": "handlebars",
+  "ignored-extensions": ["DS_Store"],
+  "ignored-directories": [],
   "debug": false,
   "ishControlsHide": {
     "s": false,
@@ -69,8 +63,8 @@
     "tools-all": false,
     "tools-docs": false
   },
-  "ishMinimum": "240",
-  "ishMaximum": "2600",
+  "ishMinimum": 240,
+  "ishMaximum": 2600,
   "patternStateCascade": [
     "specification",
     "construction",
@@ -95,10 +89,15 @@
       "initialized": false,
       "options": {
         "tabsToAdd": [
+          "scss",
           "js"
         ]
       }
+    },
+    "plugin-node-engine-extender": {
+      "enabled": true,
+      "initialized": false
     }
   },
-  "extensionPath": "./source/_extensions/extensions.js"
+  "extensionPath": "src/_extensions/extensions.js"
 }

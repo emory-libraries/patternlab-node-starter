@@ -5,70 +5,38 @@ module.exports = function(grunt) {
 
   // Pattern Lab configuration(s)
   const config = require('./patternlab-config.json');
-  const pl = require('patternlab-node')(config);
+  const patternlab = require('patternlab-node')(config);
+  const pkg = grunt.config.init({pkg: grunt.file.readJSON('package.json')});
+  const paths = grunt.config.process(config.paths);
 
-  // Helper function(s)
-  function paths() {
-
-    return config.paths;
-
-  }
-  function getConfiguredCleanOption() {
-
-    return config.cleanPublic;
-
-  }
-
-  // Pattern Lab task(s)
-  function patternLabCLI( arg ) {
-
-    if( arguments.length === 0 ) pl.build(function() {}, getConfiguredCleanOption());
-
-    if( arg && arg === 'version' ) pl.version();
-
-    if( arg && arg === "patternsonly" ) pl.patternsonly(function() {}, getConfiguredCleanOption());
-
-    if( arg && arg === "help" ) pl.help();
-
-    if( arg && arg === "liststarterkits" ) pl.liststarterkits();
-
-    if( arg && arg === "loadstarterkit" ) pl.loadstarterkit(argv.kit, argv.clean);
-
-    if( arg && !["version", "patternsonly", "help", "liststarterkits", "loadstarterkits"].include(arg) ) pl.help();
-
-  }
+  // Define a list of files to ignore during `uglify`.
+  // Paths are relative to the `dist/js/` folder.
+  const noUglify = [
+    // 'dependencies/foo/foo.js'
+  ];
 
   // Initialize configurations
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+  grunt.config.merge({
     copy: {
-      init: {
-        files: [{
-          expand: true,
-          cwd: path.resolve(paths().styleguideDefault),
-          src: ['*', '**'],
-          dest: path.resolve(paths().public.root)
-        }]
-      },
       dev: {
         files: [
           {
             expand: true,
-            cwd: path.resolve(paths().source.images),
+            cwd: path.resolve(paths.source.images),
             src: '**/*',
-            dest: path.resolve(paths().public.images)
+            dest: path.resolve(paths.public.images)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.fonts),
+            cwd: path.resolve(paths.source.fonts),
             src: '**/*',
-            dest: path.resolve(paths().public.fonts)
+            dest: path.resolve(paths.public.fonts)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.root),
+            cwd: path.resolve(paths.source.root),
             src: 'favicon.ico',
-            dest: path.resolve(paths().public.root)
+            dest: path.resolve(paths.public.root)
           }
         ]
       },
@@ -76,62 +44,30 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: path.resolve(paths().source.images),
+            cwd: path.resolve(paths.source.images),
             src: '**/*',
-            dest: path.resolve(paths().dist.images)
+            dest: path.resolve(paths.dist.images)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.fonts),
+            cwd: path.resolve(paths.source.fonts),
             src: '**/*',
-            dest: path.resolve(paths().dist.fonts)
+            dest: path.resolve(paths.dist.fonts)
           },
           {
             expand: true,
-            cwd: path.resolve(paths().source.root),
+            cwd: path.resolve(paths.source.root),
             src: 'favicon.ico',
-            dest: path.resolve(paths().dist.root)
-          }
-        ]
-      },
-      ui: {
-        files: [
-          {
-            expand: true,
-            cwd: path.resolve(paths().source.styleguide, 'images/'),
-            src: ['*', '**'],
-            dest: path.resolve(paths().public.styleguide, 'images/')
-          },
-          {
-            expand: true,
-            cwd: path.resolve(paths().source.styleguide, 'fonts/'),
-            src: ['*', '**'],
-            dest: path.resolve(paths().public.styleguide, 'fonts/')
+            dest: path.resolve(paths.dist.root)
           }
         ]
       }
     },
     watch: {
-      ui: {
-        files: [
-          path.resolve(paths().source.styleguide + '/**')
-        ],
-        tasks: [
-          'dart-sass:ui',
-          'postcss:ui',
-          'cssmin:ui',
-          'includes:ui',
-          'jshint:ui',
-          'babel:ui',
-          'patternlab',
-          'copy:ui',
-          'bsReload'
-        ]
-      },
       assets: {
         files: [
-          path.resolve(paths().source.fonts + '/**'),
-          path.resolve(paths().source.images + '/**'),
+          path.resolve(paths.source.fonts + '/**'),
+          path.resolve(paths.source.images + '/**'),
         ],
         tasks: [
           'patternlab',
@@ -141,9 +77,9 @@ module.exports = function(grunt) {
       },
       patterns: {
         files: [
-          path.resolve(paths().source.patterns + '/**'),
-          path.resolve(paths().source.data + '/**'),
-          path.resolve(paths().source.meta + '/**'),
+          path.resolve(paths.source.patterns + '/**'),
+          path.resolve(paths.source.data + '/**'),
+          path.resolve(paths.source.meta + '/**'),
         ],
         tasks: [
           'patternlab',
@@ -156,18 +92,18 @@ module.exports = function(grunt) {
           reload: true
         },
         files: [
-          path.resolve(paths().source.root + '/*.ico'),
-          path.resolve(paths().root + '/Gruntfile.js'),
-          path.resolve(paths().root + '/patternlab-config.json'),
-          path.resolve(paths().root + '.eslintrc'),
-          path.resolve(paths().root + '.babelrc'),
-          path.resolve(paths().root + '.jshintrc')
+          path.resolve(paths.source.root + '/*.ico'),
+          path.resolve(paths.root + '/Gruntfile.js'),
+          path.resolve(paths.root + '/patternlab-config.json'),
+          path.resolve(paths.root + '.eslintrc'),
+          path.resolve(paths.root + '.babelrc'),
+          path.resolve(paths.root + '.jshintrc')
         ],
         tasks: ['prewatch']
       },
       scss: {
         files: [
-          path.resolve(paths().source.scss + '/**'),
+          path.resolve(paths.source.scss + '/**'),
         ],
         tasks: [
           'dart-sass:dev',
@@ -178,7 +114,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: [
-          path.resolve(paths().source.js + '/**'),
+          path.resolve(paths.source.js + '/**'),
         ],
         tasks: [
           'jshint:dev',
@@ -199,7 +135,7 @@ module.exports = function(grunt) {
       dev: {
         options: {
           open: false,
-          server: path.resolve(paths().public.root),
+          server: path.resolve(paths.public.root),
           watchTask: true,
           watchOptions: {
             ignoreInitial: true,
@@ -212,7 +148,7 @@ module.exports = function(grunt) {
           plugins: [{
             module: 'bs-html-injector',
             options: {
-              files: [path.resolve(paths().public.root + '/index.html'), path.resolve(paths().public.styleguide + '/styleguide.html')]
+              files: [path.resolve(paths.public.root + '/index.html'), path.resolve(paths.public.styleguide + '/styleguide.html')]
             }
           }],
           notify: {
@@ -237,22 +173,8 @@ module.exports = function(grunt) {
       }
     },
     bsReload: {
-      css: path.resolve(paths().public.root + '**/*.css'),
-      js: path.resolve(paths().public.root + '**/*.js')
-    },
-    includes: {
-      ui: {
-        html: {
-          options: {
-            includePath: path.resolve(paths().source.styleguide, 'html/partials/')
-          },
-          files: [{
-            cwd: path.resolve(paths().source.styleguide, 'html/'),
-            src: 'index.html',
-            dest: path.resolve(paths().source.styleguide)
-          }]
-        }
-      }
+      css: path.resolve(paths.public.root + '**/*.css'),
+      js: path.resolve(paths.public.root + '**/*.js')
     },
     'dart-sass': {
       dev: {
@@ -262,9 +184,9 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.scss),
+          cwd: path.resolve(paths.source.scss),
           src: ['*.scss'],
-          dest: path.resolve(paths().public.css),
+          dest: path.resolve(paths.public.css),
           ext: '.css'
         }]
       },
@@ -274,26 +196,11 @@ module.exports = function(grunt) {
         },
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.scss),
+          cwd: path.resolve(paths.source.scss),
           src: ['*.scss'],
-          dest: path.resolve(paths().dist.css),
+          dest: path.resolve(paths.dist.css),
           ext: '.css'
         }]
-      },
-      ui: {
-        options: {
-          sourceMap: false,
-          style: 'expanded'
-        },
-        files: [
-          {
-            expand: true,
-            cwd: path.resolve(paths().source.styleguide, 'scss/'),
-            src: ['styleguide.scss'],
-            dest: path.resolve(paths().public.styleguide, 'css/'),
-            ext: '.css'
-          }
-        ]
       }
     },
     jshint: {
@@ -301,10 +208,7 @@ module.exports = function(grunt) {
         jshintrc: true
       },
       dev: [
-        path.resolve(paths().source.js, '*.js')
-      ],
-      ui: [
-        path.resolve(paths().source.styleguide, 'js/*.js')
+        path.resolve(paths.source.js, '*.js')
       ]
     },
     babel: {
@@ -314,25 +218,17 @@ module.exports = function(grunt) {
       dev: {
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.js),
+          cwd: path.resolve(paths.source.js),
           src: ['**/*.js'],
-          dest: path.resolve(paths().public.js)
+          dest: path.resolve(paths.public.js)
         }]
       },
       dist: {
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.js),
+          cwd: path.resolve(paths.source.js),
           src: ['**/*.js'],
-          dest: path.resolve(paths().dist.js)
-        }]
-      },
-      ui: {
-        files: [{
-          expand: true,
-          cwd: path.resolve(paths().source.styleguide, 'js/'),
-          src: ['**/*.js'],
-          dest: path.resolve(paths().public.styleguide, 'js/')
+          dest: path.resolve(paths.dist.js)
         }]
       }
     },
@@ -340,9 +236,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: path.resolve(paths().dist.js),
-          src: ['**/*.js', '!**/*.min.js'],
-          dest: path.resolve(paths().dist.js),
+          cwd: path.resolve(paths.dist.js),
+          src: ['**/*.js', '!**/*.min.js', ...noUglify.map((val) => `!${val}`)],
+          dest: path.resolve(paths.dist.js),
           ext: '.min.js'
         }]
       }
@@ -356,43 +252,42 @@ module.exports = function(grunt) {
         ]
       },
       dev: {
-        src: path.resolve(paths().public.css, '**/*.css')
+        src: path.resolve(paths.public.css, '**/*.css')
       },
       dist: {
-        src: path.resolve(paths().dist.css, '**/*.css')
-      },
-      ui: {
-        src: path.resolve(paths().public.styleguide, 'css/**/*.css')
+        src: path.resolve(paths.dist.css, '**/*.css')
       }
     },
     cssmin: {
-      ui: {
-        options: {
-          sourceMap: false
-        },
-        files: [{
-          expand: true,
-          cwd: path.resolve(paths().source.styleguide, 'css/'),
-          src: ['*.css', '!*.min.css'],
-          dest: path.resolve(paths().public.styleguide, 'css/'),
-          ext: '.min.css'
-        }]
-      },
       dist: {
         options: {
           sourceMap: false
         },
         files: [{
           expand: true,
-          cwd: path.resolve(paths().source.css),
+          cwd: path.resolve(paths.source.css),
           src: ['*.css', '!*.min.css'],
-          dest: path.resolve(paths().dist.css),
+          dest: path.resolve(paths.dist.css),
           ext: '.min.css'
         }]
       }
     },
     gitTag: {
       packageFile: 'package.json'
+    },
+    copydeps: {
+      options: {
+        unminified: true,
+        minified: true
+      },
+      dev: {
+        pkg: 'package.json',
+        dest: path.resolve(paths.public.js, 'dependencies/')
+      },
+      dist: {
+        pkg: 'package.json',
+        dest: path.resolve(paths.dist.js, 'dependencies/')
+      }
     }
   });
 
@@ -400,33 +295,39 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   // Register tasks
-  grunt.registerTask('patternlab', 'Create design systems with atomic design', patternLabCLI);
+  grunt.registerTask('patternlab', 'Create design systems with atomic design', function(arg) {
+
+    const done = this.async();
+
+    switch(arg) {
+
+      case 'build': patternlab.build(() => {}, patternlab.cleanPublic); return done();
+
+      case 'serve': patternlab.server.serve({cleanPublic: patternlab.cleanPublic}); return done();
+
+      case 'version': patternlab.version(); return done();
+
+      case 'patternsonly': patternlab.patternsonly(() => {}, patternlab.cleanPublic); return done();
+
+      case 'liststarterkits': patternlab.liststarterkits(); return done();
+
+      case 'loadstarterkit': patternlab.loadstarterkit(argv.kit, argv.clean); return done();
+
+      default: patternlab.help(); return done();
+
+    }
+
+  });
   grunt.registerTask('default', ['dev']);
   grunt.registerTask('prewatch', [
     'dart-sass:dev',
     'postcss:dev',
     'jshint:dev',
     'babel:dev',
-    'dart-sass:ui',
-    'postcss:ui',
-    'cssmin:ui',
-    'includes:ui',
-    'jshint:ui',
-    'babel:ui',
-    'patternlab',
+    'copydeps:dev',
+    'patternlab:build',
     'copy:dev',
-    'copy:ui',
     'bsReload'
-  ]);
-  grunt.registerTask('init', [
-    'copy:init',
-    'dart-sass:dev',
-    'postcss',
-    'includes',
-    'patternlab',
-    'babel:dev',
-    'copy:dev',
-    'copy:ui'
   ]);
   grunt.registerTask('dev', [
     'browserSync',
@@ -436,9 +337,9 @@ module.exports = function(grunt) {
     'dart-sass:dist',
     'postcss',
     'cssmin',
-    'includes',
-    'patternlab',
+    'patternlab:build',
     'babel:dist',
+    'copydeps:dist',
     'uglify:dist',
     'copy:dist'
   ]);
