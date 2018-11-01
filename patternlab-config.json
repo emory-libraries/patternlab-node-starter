@@ -1,39 +1,39 @@
 {
   "paths": {
     "root": "./",
-    "styleguideDefault": "node_modules/styleguidekit-assets-default/dist/",
+    "styleguideDefault": "./node_modules/styleguidekit-assets-default/dist/",
     "source": {
-      "root": "src/",
-      "patterns": "src/_patterns/",
-      "data": "src/_data/",
-      "meta": "src/_meta/",
-      "annotations": "src/_annotations/",
-      "styleguide": "src/styleguide/",
-      "patternlabFiles": "node_modules/styleguidekit-mustache-default/views/",
-      "js": "src/js",
-      "images": "src/images",
-      "fonts": "src/fonts",
-      "css": "src/css/",
-      "scss": "src/scss/"
+      "root": "./src/",
+      "patterns": "./src/_patterns/",
+      "data": "./src/_data/",
+      "meta": "./src/_meta/",
+      "annotations": "./src/_annotations/",
+      "styleguide": "./node_modules/styleguidekit-assets-default/dist/",
+      "patternlabFiles": "./node_modules/styleguidekit-mustache-default/views/",
+      "js": "./src/js",
+      "images": "./src/images",
+      "fonts": "./src/fonts",
+      "css": "./src/css/",
+      "scss": "./src/scss/"
     },
     "public": {
-      "root": "public/",
-      "patterns": "public/patterns/",
-      "data": "public/styleguide/data/",
-      "annotations": "public/annotations/",
-      "styleguide": "public/styleguide/",
-      "js": "public/js/",
-      "images": "public/images/",
-      "fonts": "public/fonts/",
-      "css": "public/css/",
-      "scss": "public/scss/"
+      "root": "./public/",
+      "patterns": "./public/patterns/",
+      "data": "./public/styleguide/data/",
+      "annotations": "./public/annotations/",
+      "styleguide": "./public/styleguide/",
+      "js": "./public/js/",
+      "images": "./public/images/",
+      "fonts": "./public/fonts/",
+      "css": "./public/css/",
+      "scss": "./public/scss/"
     },
     "dist": {
-      "root": "dist/",
-      "js": "dist/<%= pkg.version %>/js/",
-      "images": "dist/<%= pkg.version %>/images/",
-      "fonts": "dist/<%= pkg.version %>/fonts/",
-      "css": "dist/<%= pkg.version %>/css/"
+      "root": "./dist/",
+      "js": "./dist/<%= pkg.version %>/js/",
+      "images": "./dist/<%= pkg.version %>/images/",
+      "fonts": "./dist/<%= pkg.version %>/fonts/",
+      "css": "./dist/<%= pkg.version %>/css/"
     }
   },
   "styleGuideExcludes": [
@@ -43,9 +43,7 @@
   "defaultPattern": "all",
   "cleanPublic": true,
   "patternExtension": "handlebars",
-  "ignored-extensions": [
-    "DS_Store"
-  ],
+  "ignored-extensions": ["DS_Store"],
   "ignored-directories": [],
   "debug": false,
   "ishControlsHide": {

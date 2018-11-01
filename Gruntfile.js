@@ -37,6 +37,12 @@ module.exports = function(grunt) {
             cwd: path.resolve(paths.source.root),
             src: 'favicon.ico',
             dest: path.resolve(paths.public.root)
+          },
+          {
+            expand: true,
+            cwd: path.resolve(paths.source.styleguide),
+            src: '**/*',
+            dest: path.resolve(paths.public.root)
           }
         ]
       },
@@ -134,7 +140,7 @@ module.exports = function(grunt) {
     browserSync: {
       dev: {
         options: {
-          open: false,
+          open: 'local',
           server: path.resolve(paths.public.root),
           watchTask: true,
           watchOptions: {
@@ -301,13 +307,11 @@ module.exports = function(grunt) {
 
     switch(arg) {
 
-      case 'build': patternlab.build(() => {}, patternlab.cleanPublic); return done();
-
-      case 'serve': patternlab.server.serve({cleanPublic: patternlab.cleanPublic}); return done();
+      case 'build': patternlab.build(() => {}, config.cleanPublic); return done();
 
       case 'version': patternlab.version(); return done();
 
-      case 'patternsonly': patternlab.patternsonly(() => {}, patternlab.cleanPublic); return done();
+      case 'patternsonly': patternlab.patternsonly(() => {}, config.cleanPublic); return done();
 
       case 'liststarterkits': patternlab.liststarterkits(); return done();
 
@@ -324,8 +328,8 @@ module.exports = function(grunt) {
     'postcss:dev',
     'jshint:dev',
     'babel:dev',
-    'copydeps:dev',
     'patternlab:build',
+    'copydeps:dev',
     'copy:dev',
     'bsReload'
   ]);
@@ -337,8 +341,8 @@ module.exports = function(grunt) {
     'dart-sass:dist',
     'postcss',
     'cssmin',
-    'patternlab:build',
     'babel:dist',
+    'patternlab:build',
     'copydeps:dist',
     'uglify:dist',
     'copy:dist'
