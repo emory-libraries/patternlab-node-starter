@@ -1,6 +1,6 @@
 # Pattern Lab 3 - Starter Kit
 
-> **Disclaimer**: Pattern Lab 3 is still under development has not yet issued a stable release. This starter kit current deploys the `beta` version of Pattern Lab 3 and thus may contain unresolved bugs and/or limited features in comparison to any upcoming stable releases of Pattern Lab 3.
+> **Disclaimer**: Pattern Lab 3 is still under development and has not yet issued a stable release. This starter kit current deploys the `beta` version of Pattern Lab 3 and thus may contain unresolved bugs and/or limited features in comparison to any upcoming stable releases of Pattern Lab 3.
 
 This repository stores a custom starter kit for the Node edition of Pattern Lab 3 with a Grunt wrapper. This starter kit also utilizes the Handlebars engine for Pattern Lab by default.
 
