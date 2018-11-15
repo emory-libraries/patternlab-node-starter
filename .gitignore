@@ -7,6 +7,6 @@ patternlab.json
 Thumbs.db
 public/
 secret.json
-source/**/css/*.css
-source/css/*.css
-source/**/css/*.css.map
+src/**/css/*.css
+src/css/*.css
+src/**/css/*.css.map
